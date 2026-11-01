@@ -14,8 +14,10 @@
 | **Backup Storage** | Synchronous Browser **LocalStorage** Real-Time Mirror & Failover |
 | **Authentication** | Dedicated **Administrator-Only Gateway** with Encrypted Credential Verification |
 | **Frontend Framework** | **React 19.3.1**, **Vite 8.3.5**, **Tailwind CSS**, **Lucide React** |
-| **Live Deploy URL** | `https://sharethebite.vercel.app` *(Insert your live deployment URL)* |
-| **Project Source Code**| `https://github.com/your-username/foodshare-react` *(Insert your repository URL)* |
+| **Live Deploy URL** | `https://softgamestudio.github.io/Share-The-Bite/` |
+| **Direct Admin Control**| `https://softgamestudio.github.io/Share-The-Bite/#/admin` |
+| **Project Source Code**| `https://github.com/SoftGameStudio/Share-The-Bite` |
+| **Sample Catalog** | **20 Realistic Surplus Food Products** across 6 categories & 6 delivery stages |
 | **Document Classification** | Academic & Technical Comprehensive Project Dossier |
 
 ---

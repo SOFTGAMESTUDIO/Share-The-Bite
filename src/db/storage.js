@@ -23,7 +23,7 @@ export const initialTestUsers = [
   {
     id: 'usr_admin_01',
     name: 'Sarah Jenkins',
-    email: 'admin@Share The Bite.org',
+    email: 'admin@foodshare.org',
     key: 'admin123',
     role: 'admin',
     organization: 'Share The Bite Platform Oversight',
@@ -74,7 +74,7 @@ export const initialTestUsers = [
   }
 ];
 
-// Initial Mock Seed Data (Aligned with SDG 2: Zero Hunger)
+// Initial Mock Seed Data: 20 Comprehensive Sample Products (Aligned with SDG 2: Zero Hunger)
 export const initialMockDonations = [
   {
     id: 101,
@@ -91,16 +91,16 @@ export const initialMockDonations = [
     expiry: new Date(Date.now() + 24 * 3600 * 1000).toISOString().slice(0, 16),
     status: "Available",
     dietary: "Vegetarian and Halal Options",
-    notes: "Packed in sanitized insulated catering containers. Ready for pickup.",
+    notes: "Packed in sanitized insulated catering containers. Chilled at 4°C.",
     urgency: "medium",
     createdAt: new Date(Date.now() - 3600 * 1000 * 3).toISOString()
   },
   {
     id: 102,
-    item: "Fresh Farm Produce Crate (Crisp Apples and Carrots)",
+    item: "Crisp Organic Apples, Pears and Garden Carrots",
     category: "Fresh Produce",
-    quantity: "25 kgs",
-    servings: 60,
+    quantity: "30 kgs (3 crates)",
+    servings: 65,
     location: "Sector 17 Green Wholesale Market, Stall 42",
     city: "West District",
     donor: "Green Grocers Association",
@@ -110,13 +110,13 @@ export const initialMockDonations = [
     expiry: new Date(Date.now() + 72 * 3600 * 1000).toISOString().slice(0, 16),
     status: "Available",
     dietary: "100% Organic Vegan",
-    notes: "Freshly harvested produce with minor cosmetic variations, completely fresh.",
+    notes: "Farm-fresh surplus from weekly produce intake. Graded A-quality.",
     urgency: "low",
     createdAt: new Date(Date.now() - 3600 * 1000 * 6).toISOString()
   },
   {
     id: 103,
-    item: "Leftover Banquet Steamed Rice, Dal and Veg Curry",
+    item: "Banquet Steamed Basmati Rice, Dal Tadka and Veg Curry",
     category: "Cooked Meals",
     quantity: "45 servings",
     servings: 45,
@@ -131,7 +131,7 @@ export const initialMockDonations = [
     receiver: "Hope Community Relief Shelter",
     receiverPhone: "+1 (555) 888-1212",
     receiverEmail: "shelter@hope.org",
-    dietary: "Vegetarian",
+    dietary: "Vegetarian / Halal",
     notes: "Maintained in temperature-controlled chafing dishes after lunch event.",
     urgency: "high",
     receiverApplication: {
@@ -152,10 +152,10 @@ export const initialMockDonations = [
   },
   {
     id: 104,
-    item: "Artisan Sourdough Loaves and Croissant Assortment",
+    item: "Artisan Sourdough Loaves and French Croissants",
     category: "Bakery",
-    quantity: "22 loaves and 35 pastries",
-    servings: 55,
+    quantity: "25 sourdough loaves & 40 butter croissants",
+    servings: 65,
     location: "Sunrise Artisan Bakery, 104 High Street",
     city: "North Ward",
     donor: "Sunrise Artisan Bakery",
@@ -167,9 +167,9 @@ export const initialMockDonations = [
     receiver: "Community Youth Kitchen",
     receiverPhone: "+1 (555) 999-4321",
     receiverEmail: "youth@communitykitchen.org",
-    receiverNotes: "Received in great condition and distributed to 40 families.",
+    receiverNotes: "Received in great condition and distributed to 65 youth and families. Receipt verified.",
     dietary: "Vegetarian",
-    notes: "Baked fresh today morning, bagged individually.",
+    notes: "Baked fresh today morning, bagged individually in breathable paper bakery bags.",
     urgency: "low",
     receiverApplication: {
       receiverName: "Community Youth Kitchen",
@@ -178,24 +178,25 @@ export const initialMockDonations = [
       receiverPhone: "+1 (555) 999-4321",
       receiverEmail: "youth@communitykitchen.org",
       deliveryAddress: "12 Youth Center Road",
-      beneficiaryCount: 55,
+      beneficiaryCount: 65,
       vehicleType: "Self-Pickup",
       urgency: "Standard",
-      receiverNotes: "Daily breakfast program for underprivileged local teens.",
+      receiverNotes: "Daily breakfast and after-school program for underprivileged local teens.",
       appliedAt: new Date(Date.now() - 3600 * 1000 * 12).toISOString()
     },
     appliedAt: new Date(Date.now() - 3600 * 1000 * 12).toISOString(),
     acceptedAt: new Date(Date.now() - 3600 * 1000 * 10).toISOString(),
     pickedUpAt: new Date(Date.now() - 3600 * 1000 * 8).toISOString(),
     deliveredAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString(),
+    deliveryProof: "Received in great condition and distributed to 65 youth and families. Receipt verified.",
     createdAt: new Date(Date.now() - 3600 * 1000 * 14).toISOString()
   },
   {
     id: 105,
-    item: "Pasteurized Milk Cartons and Natural Greek Yogurt",
+    item: "Pasteurized Milk Cartons and Greek Probiotic Yogurt",
     category: "Dairy",
-    quantity: "20 cartons (1L each) and 30 tubs",
-    servings: 50,
+    quantity: "24 cartons (1L each) & 36 yogurt tubs",
+    servings: 60,
     location: "Valley Cold Storage Hub, Bay 12",
     city: "South District",
     donor: "Valley Farm Dairy Co.",
@@ -207,10 +208,10 @@ export const initialMockDonations = [
     receiver: "Saint Jude Community Pantry",
     receiverPhone: "+1 (555) 345-1234",
     receiverEmail: "pantry@stjude.org",
-    dietary: "Vegetarian / Gluten-Free",
+    dietary: "Gluten-Free Vegetarian",
     notes: "Refrigerated transport required. Temperature strictly 2-4°C.",
     urgency: "medium",
-    driver: "David Kim (Volunteer Driver, Green Van)",
+    driver: "David Kim (Volunteer Driver, Green Van 02)",
     receiverApplication: {
       receiverName: "Saint Jude Community Pantry",
       receiverType: "Community Food Pantry",
@@ -218,10 +219,10 @@ export const initialMockDonations = [
       receiverPhone: "+1 (555) 345-1234",
       receiverEmail: "pantry@stjude.org",
       deliveryAddress: "88 Mission Street, Parish Hall",
-      beneficiaryCount: 50,
+      beneficiaryCount: 60,
       vehicleType: "Needs Volunteer Pickup",
       urgency: "Standard",
-      receiverNotes: "Weekly food bag distribution for 50 low-income single-parent families.",
+      receiverNotes: "Weekly food bag distribution for 60 low-income single-parent families.",
       appliedAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString()
     },
     appliedAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString(),
@@ -231,23 +232,23 @@ export const initialMockDonations = [
   },
   {
     id: 106,
-    item: "Surplus Canned Black Beans, Corn and Tomato Puree",
+    item: "Surplus Canned Black Beans, Sweet Corn and Crushed Tomatoes",
     category: "Packaged & Canned",
-    quantity: "40 large cans",
-    servings: 80,
-    location: "Metro Wholesale Supermarket, Loading Dock 2",
+    quantity: "48 large commercial cans (800g each)",
+    servings: 96,
+    location: "Metro Wholesale Supermarket, Loading Bay 4",
     city: "East Harbor",
     donor: "Metro Retail Distribution",
     donorType: "Supermarket / Retail Chain",
     donorPhone: "+1 (555) 789-0123",
     donorEmail: "community@metromarket.com",
-    expiry: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString().slice(0, 16),
+    expiry: new Date(Date.now() + 180 * 24 * 3600 * 1000).toISOString().slice(0, 16),
     status: "Out for Delivery",
     receiver: "Eastside Family Mission",
     receiverPhone: "+1 (555) 890-1234",
     receiverEmail: "dispatch@eastsidefamily.org",
     dietary: "Vegan / Non-Perishable",
-    notes: "Surplus inventory from seasonal change. Cans unopened and sealed.",
+    notes: "Surplus inventory from warehouse stock rotation. Cans unopened and sealed in flats.",
     urgency: "low",
     driver: "City Relief Courier Team (Van 04)",
     receiverApplication: {
@@ -257,10 +258,10 @@ export const initialMockDonations = [
       receiverPhone: "+1 (555) 890-1234",
       receiverEmail: "dispatch@eastsidefamily.org",
       deliveryAddress: "405 Harbor Way, Warehouse 3",
-      beneficiaryCount: 80,
+      beneficiaryCount: 96,
       vehicleType: "Van Delivery",
       urgency: "Standard",
-      receiverNotes: "Stocking emergency food reserve for 80 families in recovery programs.",
+      receiverNotes: "Stocking emergency food reserve for 96 families in recovery programs.",
       appliedAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString()
     },
     appliedAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString(),
@@ -268,6 +269,446 @@ export const initialMockDonations = [
     pickedUpAt: new Date(Date.now() - 3600 * 1000 * 1.5).toISOString(),
     outForDeliveryAt: new Date(Date.now() - 3600 * 1000 * 0.8).toISOString(),
     createdAt: new Date(Date.now() - 3600 * 1000 * 8).toISOString()
+  },
+  {
+    id: 107,
+    item: "Mediterranean Grilled Lemon Herb Chicken & Roasted Potatoes",
+    category: "Cooked Meals",
+    quantity: "40 hot meal containers",
+    servings: 40,
+    location: "84 Ocean Boulevard, Kitchen Rear Entrance",
+    city: "West District",
+    donor: "Mediterranean Bistro & Grill",
+    donorType: "Restaurant / Commercial Kitchen",
+    donorPhone: "+1 (555) 432-8765",
+    donorEmail: "kitchen@medbistro.com",
+    expiry: new Date(Date.now() + 14 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Available",
+    dietary: "Halal / High-Protein / Gluten-Conscious",
+    notes: "Freshly prepared for evening conference event. Packed in heavy-duty heat-seal foil trays.",
+    urgency: "high",
+    createdAt: new Date(Date.now() - 3600 * 1000 * 2).toISOString()
+  },
+  {
+    id: 108,
+    item: "Hydroponic Mixed Greens, Baby Spinach & Ripe Cluster Tomatoes",
+    category: "Fresh Produce",
+    quantity: "18 kgs (6 ventilated crates)",
+    servings: 50,
+    location: "Greenhouse Complex 5, River Road",
+    city: "Riverside",
+    donor: "Blue River Organics",
+    donorType: "Urban Farm / Hydroponics",
+    donorPhone: "+1 (555) 654-3210",
+    donorEmail: "sales@blueriverorganics.com",
+    expiry: new Date(Date.now() + 60 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Requested",
+    receiver: "New Hope Women's Shelter",
+    receiverPhone: "+1 (555) 777-6543",
+    receiverEmail: "intake@newhopeshelter.org",
+    dietary: "100% Organic Vegan / Raw",
+    notes: "Harvested this morning. Crisp and refrigerated at 5°C.",
+    urgency: "medium",
+    receiverApplication: {
+      receiverName: "New Hope Women's Shelter",
+      receiverType: "Women & Children Emergency Shelter",
+      contactPerson: "Maria Gonzalez",
+      receiverPhone: "+1 (555) 777-6543",
+      receiverEmail: "intake@newhopeshelter.org",
+      deliveryAddress: "320 Maple Avenue, Resident Kitchen",
+      beneficiaryCount: 50,
+      vehicleType: "Needs Volunteer Pickup",
+      urgency: "Lunch Service Tomorrow",
+      receiverNotes: "Providing fresh salad and greens bar for 50 resident mothers and children.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 2).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 2).toISOString(),
+    createdAt: new Date(Date.now() - 3600 * 1000 * 7).toISOString()
+  },
+  {
+    id: 109,
+    item: "Whole Wheat Sandwich Buns and Sliced Brioche Bread",
+    category: "Bakery",
+    quantity: "60 bun packs & 30 sliced sandwich loaves",
+    servings: 90,
+    location: "Industrial Park, Unit 8, Bakery Row",
+    city: "North Ward",
+    donor: "Golden Crust Commercial Bakery",
+    donorType: "Commercial Bakery",
+    donorPhone: "+1 (555) 321-7654",
+    donorEmail: "dispatch@goldencrust.com",
+    expiry: new Date(Date.now() + 48 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Request Accepted",
+    receiver: "Downtown Daylight Drop-in Center",
+    receiverPhone: "+1 (555) 888-4422",
+    receiverEmail: "coordinator@daylightcenter.org",
+    dietary: "Vegetarian",
+    notes: "Sealed packaging, ambient storage, high nutrition whole grain.",
+    urgency: "medium",
+    receiverApplication: {
+      receiverName: "Downtown Daylight Drop-in Center",
+      receiverType: "Daytime Homeless Center",
+      contactPerson: "Arthur Pendelton",
+      receiverPhone: "+1 (555) 888-4422",
+      receiverEmail: "coordinator@daylightcenter.org",
+      deliveryAddress: "15 Central Square, Lower Level",
+      beneficiaryCount: 90,
+      vehicleType: "Van Delivery Requested",
+      urgency: "Breakfast Service",
+      receiverNotes: "Will prepare 90 morning sandwiches for drop-in clients.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 3).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 3).toISOString(),
+    acceptedAt: new Date(Date.now() - 3600 * 1000 * 1.2).toISOString(),
+    createdAt: new Date(Date.now() - 3600 * 1000 * 9).toISOString()
+  },
+  {
+    id: 110,
+    item: "Farm Fresh Cheddar Cheese Blocks and Cottage Cheese",
+    category: "Dairy",
+    quantity: "20 cheese blocks (500g) & 25 cottage cheese tubs",
+    servings: 70,
+    location: "Dairy Distribution Depot, Dock 3",
+    city: "South District",
+    donor: "Daily Fresh Dairy Processing",
+    donorType: "Dairy Processing",
+    donorPhone: "+1 (555) 432-1098",
+    donorEmail: "logistics@dailyfreshdairy.com",
+    expiry: new Date(Date.now() + 5 * 24 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Picked Up",
+    receiver: "Grace Senior Community Kitchen",
+    receiverPhone: "+1 (555) 666-3311",
+    receiverEmail: "kitchen@graceseniors.org",
+    dietary: "Vegetarian / High-Calcium",
+    notes: "Keep chilled at 2-6°C. Insulated thermal blankets used during transit.",
+    urgency: "medium",
+    driver: "Officer Ray Reynolds (Transit Logistics Van #1)",
+    receiverApplication: {
+      receiverName: "Grace Senior Community Kitchen",
+      receiverType: "Elderly Care & Nutrition Hub",
+      contactPerson: "Brenda Taylor",
+      receiverPhone: "+1 (555) 666-3311",
+      receiverEmail: "kitchen@graceseniors.org",
+      deliveryAddress: "510 Elderberry Way, Community Hall",
+      beneficiaryCount: 70,
+      vehicleType: "Refrigerated Van",
+      urgency: "Standard",
+      receiverNotes: "Nutritious dairy products for 70 low-income senior citizens in our lunch meal initiative.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 6).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 6).toISOString(),
+    acceptedAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString(),
+    outForPickupAt: new Date(Date.now() - 3600 * 1000 * 2).toISOString(),
+    pickedUpAt: new Date(Date.now() - 3600 * 1000 * 0.8).toISOString(),
+    createdAt: new Date(Date.now() - 3600 * 1000 * 10).toISOString()
+  },
+  {
+    id: 111,
+    item: "Whole Grain Penne Pasta, Brown Rice and Rolled Oats",
+    category: "Packaged & Canned",
+    quantity: "35 bulk packs (1kg each)",
+    servings: 105,
+    location: "450 Oakwood Avenue, Storage Room C",
+    city: "Midtown",
+    donor: "Oakwood Community Market",
+    donorType: "Grocery Co-op",
+    donorPhone: "+1 (555) 987-1234",
+    donorEmail: "info@oakwoodmarket.org",
+    expiry: new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Available",
+    dietary: "Vegan / High-Fiber",
+    notes: "Pantry staples with pristine packaging. Perfect for community soup kitchens.",
+    urgency: "low",
+    createdAt: new Date(Date.now() - 3600 * 1000 * 11).toISOString()
+  },
+  {
+    id: 112,
+    item: "Cold-Pressed Valencia Orange and Green Apple Juice Bottles",
+    category: "Beverages",
+    quantity: "60 individual glass bottles (330ml)",
+    servings: 60,
+    location: "Pier 9 Juice Kiosk & Bottling, Bay 1",
+    city: "East Harbor",
+    donor: "Ocean Breeze Juicery",
+    donorType: "Beverage Producer",
+    donorPhone: "+1 (555) 765-4321",
+    donorEmail: "orders@oceanbreezejuice.com",
+    expiry: new Date(Date.now() + 30 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Out for Delivery",
+    receiver: "Pine Valley Children's After-School Club",
+    receiverPhone: "+1 (555) 555-8765",
+    receiverEmail: "activities@pinevalleykids.org",
+    dietary: "100% Pure Fruit Vegan / No Added Sugar",
+    notes: "Freshly cold-pressed fruit juices in sealed recyclable bottles. Chilled.",
+    urgency: "high",
+    driver: "David Kim (Green Relief Electric Van)",
+    receiverApplication: {
+      receiverName: "Pine Valley Children's After-School Club",
+      receiverType: "Youth Support Organization",
+      contactPerson: "Principal Lisa Chen",
+      receiverPhone: "+1 (555) 555-8765",
+      receiverEmail: "activities@pinevalleykids.org",
+      deliveryAddress: "77 Pine Road, Gymnasium Wing",
+      beneficiaryCount: 60,
+      vehicleType: "Electric Van Delivery",
+      urgency: "Afternoon Snack Session",
+      receiverNotes: "Healthy vitamin-rich refreshments for 60 children attending our educational after-school camp.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString(),
+    acceptedAt: new Date(Date.now() - 3600 * 1000 * 2.8).toISOString(),
+    pickedUpAt: new Date(Date.now() - 3600 * 1000 * 1.4).toISOString(),
+    outForDeliveryAt: new Date(Date.now() - 3600 * 1000 * 0.4).toISOString(),
+    createdAt: new Date(Date.now() - 3600 * 1000 * 6).toISOString()
+  },
+  {
+    id: 113,
+    item: "Nutritious Roasted Vegetable and Lentil Hearty Stew",
+    category: "Cooked Meals",
+    quantity: "30 liters in 3 thermal insulated urns",
+    servings: 60,
+    location: "100 Convention Plaza, Loading Dock B",
+    city: "Metro Central",
+    donor: "Starlight Convention Center",
+    donorType: "Convention Banquet / Caterer",
+    donorPhone: "+1 (555) 876-5432",
+    donorEmail: "catering@starlightcenter.org",
+    expiry: new Date(Date.now() + 18 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Available",
+    dietary: "Vegan / Gluten-Free",
+    notes: "Rich, hot vegetable lentil stew prepared today at noon in commercial soup urns. Insulated.",
+    urgency: "high",
+    createdAt: new Date(Date.now() - 3600 * 1000 * 1.5).toISOString()
+  },
+  {
+    id: 114,
+    item: "Fresh Seasonal Oranges, Bananas and Seedless Grapes",
+    category: "Fresh Produce",
+    quantity: "35 kgs (4 assorted fruit boxes)",
+    servings: 75,
+    location: "Market Terminal 3, Stand 11",
+    city: "West District",
+    donor: "City Harvest Orchards",
+    donorType: "Agricultural Produce Co-op",
+    donorPhone: "+1 (555) 543-2109",
+    donorEmail: "dispatch@cityharvestorchards.com",
+    expiry: new Date(Date.now() + 4 * 24 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Request Accepted",
+    receiver: "Safe Haven Homeless Clinic & Shelter",
+    receiverPhone: "+1 (555) 444-1122",
+    receiverEmail: "clinic@safehavenshelter.org",
+    dietary: "Raw Vegan / Vitamin C Rich",
+    notes: "Sweet, juicy eating fruit ready for distribution. Cleaned and pre-sorted.",
+    urgency: "medium",
+    receiverApplication: {
+      receiverName: "Safe Haven Homeless Clinic & Shelter",
+      receiverType: "Emergency Clinic & Shelter",
+      contactPerson: "Dr. Robert Harris",
+      receiverPhone: "+1 (555) 444-1122",
+      receiverEmail: "clinic@safehavenshelter.org",
+      deliveryAddress: "900 Hope Boulevard, Annex C",
+      beneficiaryCount: 75,
+      vehicleType: "Van Delivery Requested",
+      urgency: "Immediate",
+      receiverNotes: "Distributing nutritious fruit bags to 75 unhoused patients visiting our medical outreach clinic.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 3.5).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 3.5).toISOString(),
+    acceptedAt: new Date(Date.now() - 3600 * 1000 * 1.8).toISOString(),
+    createdAt: new Date(Date.now() - 3600 * 1000 * 8).toISOString()
+  },
+  {
+    id: 115,
+    item: "Assorted Bagels, Blueberry Muffins and Multigrain Rolls",
+    category: "Bakery",
+    quantity: "45 bagels, 35 muffins, 50 rolls",
+    servings: 80,
+    location: "220 Central Boulevard",
+    city: "Metro Central",
+    donor: "Skyline Deli & Roasters",
+    donorType: "Bakery & Deli",
+    donorPhone: "+1 (555) 210-9876",
+    donorEmail: "baking@skylinedeli.com",
+    expiry: new Date(Date.now() + 28 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Out for Pickup",
+    receiver: "Saint Vincent Veterans Care Home",
+    receiverPhone: "+1 (555) 333-8899",
+    receiverEmail: "dispatch@stvincentsveterans.org",
+    dietary: "Vegetarian",
+    notes: "Packed in sanitized food-grade bakery boxes, organized by pastry type.",
+    urgency: "medium",
+    driver: "Marcus Vance (Share The Bite Fleet Van #2)",
+    receiverApplication: {
+      receiverName: "Saint Vincent Veterans Care Home",
+      receiverType: "Veterans Supportive Housing",
+      contactPerson: "Captain Thomas Ross",
+      receiverPhone: "+1 (555) 333-8899",
+      receiverEmail: "dispatch@stvincentsveterans.org",
+      deliveryAddress: "410 Patriot Way, Dining Pavilion",
+      beneficiaryCount: 80,
+      vehicleType: "Fleet Van Pickup",
+      urgency: "Standard",
+      receiverNotes: "Morning breakfast and coffee fellowship for 80 resident military veterans.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString(),
+    acceptedAt: new Date(Date.now() - 3600 * 1000 * 3).toISOString(),
+    outForPickupAt: new Date(Date.now() - 3600 * 1000 * 0.9).toISOString(),
+    createdAt: new Date(Date.now() - 3600 * 1000 * 9).toISOString()
+  },
+  {
+    id: 116,
+    item: "Unsweetened Almond Milk and Oat Barista Cartons",
+    category: "Beverages",
+    quantity: "40 cartons (1L each)",
+    servings: 80,
+    location: "15 Roastery Way, Unit 4",
+    city: "Midtown",
+    donor: "Artisan Coffee Roasters Guild",
+    donorType: "Cafe Cooperative",
+    donorPhone: "+1 (555) 109-8765",
+    donorEmail: "supplies@roastersguild.com",
+    expiry: new Date(Date.now() + 60 * 24 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Requested",
+    receiver: "Community Table Interfaith Kitchen",
+    receiverPhone: "+1 (555) 222-7766",
+    receiverEmail: "table@interfaithkitchen.org",
+    dietary: "Plant-Based Dairy-Free / Vegan",
+    notes: "Shelf-stable ambient storage cartons. Perfect for vegan/lactose-intolerant guests.",
+    urgency: "low",
+    receiverApplication: {
+      receiverName: "Community Table Interfaith Kitchen",
+      receiverType: "Interfaith Community Kitchen",
+      contactPerson: "Rabbi Jonathan & Pastor Grace",
+      receiverPhone: "+1 (555) 222-7766",
+      receiverEmail: "table@interfaithkitchen.org",
+      deliveryAddress: "128 Unity Avenue, Basement Kitchen",
+      beneficiaryCount: 80,
+      vehicleType: "Volunteer Vehicle Available",
+      urgency: "Weekly Dinner",
+      receiverNotes: "Supplying plant-based milk alternatives for 80 attendees with dietary sensitivities.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 2.5).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 2.5).toISOString(),
+    createdAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString()
+  },
+  {
+    id: 117,
+    item: "Individual Shelf-Stable Tuna Salad and Crackers Kits",
+    category: "Packaged & Canned",
+    quantity: "55 ready-to-eat meal kits",
+    servings: 55,
+    location: "Port Warehouse 6, Gate A",
+    city: "East Harbor",
+    donor: "Harborview Marine & Grocers",
+    donorType: "Food Distributor / Marine Wholesaler",
+    donorPhone: "+1 (555) 345-6712",
+    donorEmail: "provisions@harborviewgrocers.com",
+    expiry: new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Available",
+    dietary: "High-Protein / Non-Perishable",
+    notes: "Complete individual kits including spoon and napkin. Zero refrigeration or cooking required.",
+    urgency: "low",
+    createdAt: new Date(Date.now() - 3600 * 1000 * 16).toISOString()
+  },
+  {
+    id: 118,
+    item: "School District Surplus Nutrition Packs: Milk, Apples & Sandwiches",
+    category: "Cooked Meals",
+    quantity: "65 balanced pre-packed student lunches",
+    servings: 65,
+    location: "School District Kitchen Depot, 90 School Lane",
+    city: "South District",
+    donor: "Central School District Kitchen",
+    donorType: "Educational Institution",
+    donorPhone: "+1 (555) 901-2345",
+    donorEmail: "nutrition@centralschooldistrict.edu",
+    expiry: new Date(Date.now() + 20 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Delivered",
+    receiver: "West End Boys & Girls Club",
+    receiverPhone: "+1 (555) 111-9988",
+    receiverEmail: "info@westendbgclub.org",
+    dietary: "Nut-Free / Balanced Student Meal",
+    notes: "Each pack contains turkey & cheese sandwich, organic apple, and 250ml milk carton.",
+    urgency: "high",
+    receiverApplication: {
+      receiverName: "West End Boys & Girls Club",
+      receiverType: "Youth Development Center",
+      contactPerson: "Director Samuel Lee",
+      receiverPhone: "+1 (555) 111-9988",
+      receiverEmail: "info@westendbgclub.org",
+      deliveryAddress: "350 West Boulevard, Recreation Hall",
+      beneficiaryCount: 65,
+      vehicleType: "Direct Delivery",
+      urgency: "Immediate",
+      receiverNotes: "Emergency after-school meal program for 65 neighborhood youths.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 10).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 10).toISOString(),
+    acceptedAt: new Date(Date.now() - 3600 * 1000 * 8).toISOString(),
+    pickedUpAt: new Date(Date.now() - 3600 * 1000 * 6).toISOString(),
+    deliveredAt: new Date(Date.now() - 3600 * 1000 * 2).toISOString(),
+    deliveryProof: "Received 65 student nutrition packs. Handed out to club members at 4:30 PM. Signed: Director Samuel Lee.",
+    createdAt: new Date(Date.now() - 3600 * 1000 * 12).toISOString()
+  },
+  {
+    id: 119,
+    item: "Organic Free-Range Eggs and Farm Butter Bricks",
+    category: "Dairy",
+    quantity: "30 dozen eggs (360 eggs) & 20 butter packages",
+    servings: 90,
+    location: "Highland Farm Storehouse, Bay 7",
+    city: "Riverside",
+    donor: "Highland Farm Cooperative",
+    donorType: "Farm Cooperative",
+    donorPhone: "+1 (555) 890-5678",
+    donorEmail: "orders@highlandfarmcoop.com",
+    expiry: new Date(Date.now() + 14 * 24 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Delivered",
+    receiver: "Mercy Meal Kitchen",
+    receiverPhone: "+1 (555) 777-3344",
+    receiverEmail: "kitchen@mercymeal.org",
+    dietary: "Vegetarian / Protein-Rich",
+    notes: "Cartoned Grade-AA eggs and salted butter bricks. Maintained at 4°C in transit.",
+    urgency: "low",
+    receiverApplication: {
+      receiverName: "Mercy Meal Kitchen",
+      receiverType: "Soup Kitchen & Food Pantry",
+      contactPerson: "Sister Teresa",
+      receiverPhone: "+1 (555) 777-3344",
+      receiverEmail: "kitchen@mercymeal.org",
+      deliveryAddress: "600 Saint Ann Street, Pantry Gate",
+      beneficiaryCount: 90,
+      vehicleType: "Volunteer Refrigerated Van",
+      urgency: "Standard",
+      receiverNotes: "Essential breakfast cooking staples for 90 meals served daily to families in need.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 14).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 14).toISOString(),
+    acceptedAt: new Date(Date.now() - 3600 * 1000 * 11).toISOString(),
+    pickedUpAt: new Date(Date.now() - 3600 * 1000 * 7).toISOString(),
+    deliveredAt: new Date(Date.now() - 3600 * 1000 * 3).toISOString(),
+    deliveryProof: "Delivered and inspected. Temperature 3.8°C verified. Stored in walk-in cooler. Signed: Sister Teresa.",
+    createdAt: new Date(Date.now() - 3600 * 1000 * 18).toISOString()
+  },
+  {
+    id: 120,
+    item: "Hydration Electrolyte Coconut Water and Fruit Infusions",
+    category: "Beverages",
+    quantity: "72 tetra-pak cartons (500ml)",
+    servings: 72,
+    location: "South Logistic Hub, Gate 9",
+    city: "South District",
+    donor: "Pure Life Beverage Distributors",
+    donorType: "Beverage Distributor",
+    donorPhone: "+1 (555) 678-1230",
+    donorEmail: "operations@purelifebev.com",
+    expiry: new Date(Date.now() + 180 * 24 * 3600 * 1000).toISOString().slice(0, 16),
+    status: "Available",
+    dietary: "Organic Vegan / Electrolyte Rich",
+    notes: "Sealed cartons in protective shrink-wrap cases. Ambient storage. High potassium hydration.",
+    urgency: "low",
+    createdAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString()
   }
 ];
 
@@ -500,7 +941,12 @@ export async function getAllUsers() {
 export async function loginUser(email, key) {
   const users = await getAllUsers();
   const cleanEmail = email.trim().toLowerCase();
-  const found = users.find(u => u.email.toLowerCase() === cleanEmail);
+  let found = users.find(u => u.email.toLowerCase() === cleanEmail);
+
+  // Fallback for admin email variations
+  if (!found && (cleanEmail === 'admin@foodshare.org' || cleanEmail === 'admin@sharethebite.org' || cleanEmail === 'admin@share the bite.org')) {
+    found = users.find(u => u.role === 'admin');
+  }
 
   if (!found) {
     throw new Error('No registered account found with this email address.');
@@ -676,14 +1122,14 @@ export async function initializeStorage() {
     if (donations.length === 0) {
       // Check if LocalStorage has backup
       const lsBackup = readLocalStorage(LS_KEY_DONATIONS, null);
-      if (lsBackup && Array.isArray(lsBackup) && lsBackup.length > 0) {
+      if (lsBackup && Array.isArray(lsBackup) && lsBackup.length >= 20) {
         donations = lsBackup;
         const writeTx = db.transaction(STORE_DONATIONS, 'readwrite');
         const writeStore = writeTx.objectStore(STORE_DONATIONS);
         donations.forEach(item => writeStore.put(item));
         await logActivity('INDEXEDDB_RESTORED', `Restored ${donations.length} items from LocalStorage backup into IndexedDB.`);
       } else {
-        // Both are empty: Seed with initial Mock SDG 2 Data
+        // Both are empty or insufficient: Seed with initial 20 Mock SDG 2 Data
         donations = [...initialMockDonations];
         const seedTx = db.transaction(STORE_DONATIONS, 'readwrite');
         const seedStore = seedTx.objectStore(STORE_DONATIONS);
@@ -691,13 +1137,26 @@ export async function initializeStorage() {
         writeLocalStorage(LS_KEY_DONATIONS, donations);
         await logActivity('INITIAL_SEED', `Seeded database with ${donations.length} SDG 2 Share The Bite listings.`);
       }
+    } else if (donations.length < 20) {
+      // Auto-upgrade: If browser has older dataset (e.g. earlier 6 items), upgrade with all 20 sample items
+      const existingIds = new Set(donations.map(d => d.id));
+      const missing = initialMockDonations.filter(m => !existingIds.has(m.id));
+      const upgradedList = (donations.length <= 6) ? [...initialMockDonations] : [...donations, ...missing];
+
+      const writeTx = db.transaction(STORE_DONATIONS, 'readwrite');
+      const writeStore = writeTx.objectStore(STORE_DONATIONS);
+      writeStore.clear();
+      upgradedList.forEach(item => writeStore.put(item));
+      writeLocalStorage(LS_KEY_DONATIONS, upgradedList);
+      donations = upgradedList;
+      await logActivity('DATABASE_UPGRADE', `Automatically upgraded storage to ${donations.length} comprehensive SDG-2 surplus food listings.`);
     } else {
       writeLocalStorage(LS_KEY_DONATIONS, donations);
     }
   } catch (err) {
     console.warn('IndexedDB unavailable or blocked. Using LocalStorage primary mode:', err);
     let lsBackup = readLocalStorage(LS_KEY_DONATIONS, null);
-    if (!lsBackup || lsBackup.length === 0) {
+    if (!lsBackup || lsBackup.length < 20) {
       lsBackup = [...initialMockDonations];
       writeLocalStorage(LS_KEY_DONATIONS, lsBackup);
     }

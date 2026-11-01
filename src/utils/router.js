@@ -60,7 +60,7 @@ export function useHashRoute() {
 
     // Ensure initial hash exists
     if (!window.location.hash) {
-      window.location.hash = '#/report';
+      window.location.hash = '#/home';
     }
 
     return () => {

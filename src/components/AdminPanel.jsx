@@ -607,7 +607,7 @@ export default function AdminPanel({
           <button
             onClick={() => setConfirmResetOpen(true)}
             className="bg-emerald-800 hover:bg-emerald-700 text-emerald-100 border border-emerald-600/50 text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shadow-sm"
-            title="Reset to 6 default SDG 2 mock listings"
+            title="Reset to 20 default SDG 2 sample listings"
           >
             <RotateCcw size={14} />
             <span>Reset Demo Data</span>

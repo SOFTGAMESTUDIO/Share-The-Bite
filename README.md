@@ -36,11 +36,42 @@ The platform is designed around **5 Core Operational Pillars** with **1 Single L
 
 ## 🔗 Live Deployment & Repository Links
 
-* **Live Web Application URL**: `https://sharethebite.vercel.app` *(Replace with your live deployment URL)*
-* **Alternative Mirror (Netlify)**: `https://sharethebite.netlify.app`
-* **GitHub Source Code Repository**: `https://github.com/your-username/foodshare-react`
-* **Comprehensive Project Report**: `PROJECT_REPORT.md` (and in-app at `/#/report`)
-* **Administrative Control Panel Route**: `/#/admin`
+* **Live Web Application URL**: `https://softgamestudio.github.io/Share-The-Bite/`
+* **Direct Admin Control Center**: `https://softgamestudio.github.io/Share-The-Bite/#/admin`
+* **Home Page**: `https://softgamestudio.github.io/Share-The-Bite/#/home`
+* **All Products Directory (20 Sample Items)**: `https://softgamestudio.github.io/Share-The-Bite/#/listings`
+* **Public Donor Form**: `https://softgamestudio.github.io/Share-The-Bite/#/donor`
+* **SDG 2 Project Report**: `https://softgamestudio.github.io/Share-The-Bite/#/report`
+* **GitHub Repository**: `https://github.com/SoftGameStudio/Share-The-Bite`
+
+---
+
+## 📦 20 Comprehensive Sample Food Products & Lifecycle Breakdown
+
+The platform comes pre-configured with **20 realistic surplus food products** spanning 6 diverse categories and distributed across all real-world relief delivery stages (rescuing over 1,400 meal portions):
+
+| ID | Item Description | Category | Portions | Donor Organization | Status / Lifecycle Stage | Receiver / Delivery Partner |
+|---|---|---|---|---|---|---|
+| **#101** | Assorted Gourmet Sandwiches & Veggie Wraps | Cooked Meals | 50 meals | Fresh Eats Catering Co. | `Available` | Open for shelter application |
+| **#102** | Crisp Organic Apples, Pears & Carrots | Fresh Produce | 65 meals | Green Grocers Association | `Available` | Open for shelter application |
+| **#103** | Banquet Steamed Basmati Rice, Dal & Curry | Cooked Meals | 45 meals | Grand Plaza Hotel & Suites | `Requested` | Hope Community Relief Shelter (Elena Vance) |
+| **#104** | Artisan Sourdough Loaves & Croissants | Bakery | 65 meals | Sunrise Artisan Bakery | `Delivered` | Community Youth Kitchen (Marcus Brody) |
+| **#105** | Pasteurized Milk Cartons & Greek Yogurt | Dairy | 60 meals | Valley Farm Dairy Co. | `Out for Pickup` | Saint Jude Pantry (Driver: David Kim) |
+| **#106** | Canned Black Beans, Sweet Corn & Tomatoes | Packaged & Canned | 96 meals | Metro Retail Distribution | `Out for Delivery` | Eastside Family Mission (Van 04) |
+| **#107** | Mediterranean Lemon Herb Chicken & Potatoes | Cooked Meals | 40 meals | Mediterranean Bistro & Grill | `Available` | Open for shelter application |
+| **#108** | Hydroponic Mixed Greens & Cluster Tomatoes | Fresh Produce | 50 meals | Blue River Organics | `Requested` | New Hope Women's Shelter (Maria Gonzalez) |
+| **#109** | Whole Wheat Sandwich Buns & Brioche Bread | Bakery | 90 meals | Golden Crust Commercial Bakery | `Request Accepted` | Downtown Daylight Center (Arthur Pendelton) |
+| **#110** | Farm Fresh Cheddar Cheese & Cottage Cheese | Dairy | 70 meals | Daily Fresh Dairy Processing | `Picked Up` | Grace Senior Kitchen (Driver: Ray Reynolds) |
+| **#111** | Whole Grain Penne Pasta, Rice & Rolled Oats | Packaged & Canned | 105 meals | Oakwood Community Market | `Available` | Open for shelter application |
+| **#112** | Cold-Pressed Valencia Orange & Apple Juice | Beverages | 60 meals | Ocean Breeze Juicery | `Out for Delivery` | Pine Valley Children's Club (Lisa Chen) |
+| **#113** | Roasted Vegetable & Lentil Hearty Stew | Cooked Meals | 60 meals | Starlight Convention Center | `Available` | Open for shelter application |
+| **#114** | Fresh Seasonal Oranges, Bananas & Grapes | Fresh Produce | 75 meals | City Harvest Orchards | `Request Accepted` | Safe Haven Clinic & Shelter (Dr. Robert Harris) |
+| **#115** | Assorted Bagels, Blueberry Muffins & Rolls | Bakery | 80 meals | Skyline Deli & Roasters | `Out for Pickup` | St. Vincent Veterans Care (Driver: Marcus Vance) |
+| **#116** | Unsweetened Almond Milk & Oat Barista Cartons | Beverages | 80 meals | Artisan Coffee Roasters Guild | `Requested` | Community Table Interfaith (Rabbi Jonathan) |
+| **#117** | Shelf-Stable Tuna Salad & Crackers Kits | Packaged & Canned | 55 meals | Harborview Marine & Grocers | `Available` | Open for shelter application |
+| **#118** | School Surplus Nutrition Packs: Milk & Fruit | Cooked Meals | 65 meals | Central School District Kitchen | `Delivered` | West End Boys & Girls Club (Samuel Lee) |
+| **#119** | Organic Free-Range Eggs & Farm Butter Bricks | Dairy | 90 meals | Highland Farm Cooperative | `Delivered` | Mercy Meal Kitchen (Sister Teresa) |
+| **#120** | Hydration Electrolyte Coconut Water Cartons | Beverages | 72 meals | Pure Life Beverage Distributors | `Available` | Open for shelter application |
 
 ---
 
