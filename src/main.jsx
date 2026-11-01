@@ -173,13 +173,14 @@ export default function App() {
     navigate('listings');
   };
 
-  // Calculate stats for report & headers
-  const availableCount = donations.filter((d) => d.status === 'Available').length;
-  const claimedCount = donations.filter((d) => d.status !== 'Available').length;
-  const deliveredCount = donations.filter((d) => d.status === 'Delivered').length;
+  // Calculate stats for report & headers (with defensive array safeguards)
+  const safeDonations = Array.isArray(donations) ? donations : [];
+  const availableCount = safeDonations.filter((d) => d.status === 'Available').length;
+  const claimedCount = safeDonations.filter((d) => d.status !== 'Available').length;
+  const deliveredCount = safeDonations.filter((d) => d.status === 'Delivered').length;
 
   const stats = {
-    total: donations.length,
+    total: safeDonations.length,
     available: availableCount,
     claimed: claimedCount,
     delivered: deliveredCount
@@ -303,9 +304,119 @@ export default function App() {
   );
 }
 
-// React 18 / 19 Root Mount
+// Bulletproof Error Boundary: Catches any runtime exceptions and prevents white screen
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Share The Bite Application Error Caught:', error, errorInfo);
+  }
+
+  handleRecovery = () => {
+    try {
+      localStorage.removeItem('Share The Bite_active_session');
+      sessionStorage.clear();
+    } catch (e) {}
+    window.location.hash = '#/home';
+    window.location.reload();
+  };
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f8fafc',
+          padding: '24px',
+          fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+        }}>
+          <div style={{
+            maxWidth: '540px',
+            width: '100%',
+            backgroundColor: '#ffffff',
+            borderRadius: '24px',
+            padding: '36px',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.08)',
+            textAlign: 'center'
+          }}>
+            <div style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '18px',
+              backgroundColor: '#ecfdf5',
+              border: '1px solid #a7f3d0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px',
+              fontSize: '26px'
+            }}>
+              🌱
+            </div>
+            <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#0f172a', margin: '0 0 8px' }}>
+              Share The Bite: Recovery Mode
+            </h2>
+            <p style={{ fontSize: '13px', color: '#64748b', lineHeight: '1.6', margin: '0 0 20px' }}>
+              A client-side state issue was detected. Click below to refresh your session and reload the verified 20 sample products.
+            </p>
+            {this.state.error?.message && (
+              <div style={{
+                backgroundColor: '#f1f5f9',
+                borderRadius: '12px',
+                padding: '12px',
+                fontSize: '11px',
+                color: '#475569',
+                textAlign: 'left',
+                fontFamily: 'monospace',
+                marginBottom: '20px',
+                wordBreak: 'break-word'
+              }}>
+                {this.state.error.message}
+              </div>
+            )}
+            <button
+              onClick={this.handleRecovery}
+              style={{
+                width: '100%',
+                padding: '14px 20px',
+                borderRadius: '14px',
+                backgroundColor: '#166534',
+                color: '#ffffff',
+                fontWeight: '700',
+                fontSize: '13px',
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
+            >
+              🔄 Refresh & Reload Platform
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// React 18 / 19 Root Mount with Error Boundary
 const rootElement = document.getElementById('root');
 if (rootElement) {
   const root = createRoot(rootElement);
-  root.render(<App />);
+  root.render(
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  );
 }
