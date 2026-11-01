@@ -1,0 +1,9 @@
+# Share The Bite - UN SDG 2 Zero Hunger Platform Robots Configuration
+User-agent: *
+Allow: /
+Disallow: /admin
+
+# Host and Sitemap
+Host: https://Share The Bite.org
+Sitemap: https://Share The Bite.org/sitemap.xml
+

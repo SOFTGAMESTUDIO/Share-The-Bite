@@ -1,0 +1,30 @@
+# Share The Bite: Digital Redistribution Platform for Surplus Food
+# Aligned with United Nations Sustainable Development Goal 2 (Zero Hunger)
+
+## Project Overview
+Share The Bite is a specialized web application engineered to bridge the gap between commercial surplus food generation and emergency nutritional relief. The platform enables hospitality providers, event organizers, and retail grocers to list wholesome surplus meals for immediate recovery by registered community shelters, soup kitchens, and non-governmental organizations.
+
+## Core Problem and Global Impact
+- According to the United Nations Food and Agriculture Organization (FAO), approximately 1.3 billion metric tons of food are wasted annually, while 828 million people face severe food insecurity.
+- Commercial banquet and dining operations frequently generate surplus food that expires within a short 4 to 24-hour window.
+- Share The Bite eliminates the coordination bottleneck through decentralized, zero-latency digital listings and geographic matching.
+
+## Technical Architecture
+- Client-Side Persistence: Full transactional database implementation using the browser IndexedDB API with the Share The BiteAppDB object store.
+- High-Availability Dual Synchronization: Real-time mirror to LocalStorage ensuring offline access, tab isolation resilience, and session longevity.
+- Verification and Chain of Custody: Audited lifecycle transitions tracking food status through Available, Pending Pickup, Picked Up, and Delivered states.
+- Administrative Control: Comprehensive inspection, audit log analysis, JSON export/import data portability, and database reset capabilities.
+
+## Target User Groups
+1. Food Donors: Caterers, hotels, corporate dining halls, bakeries, and wholesale grocers.
+2. Food Receivers: Registered non-profits, homeless shelters, community pantries, and youth care kitchens.
+3. System Administrators: Quality coordinators and compliance officers overseeing database integrity and audit logs.
+
+## Official Canonical URL and Routing
+- Project Report and Documentation: https://Share The Bite.org/#/report
+- Food Marketplace and Listings: https://Share The Bite.org/#/listings
+- Surplus Food Donation Intake: https://Share The Bite.org/#/donor
+- Receiver Logistics Pipeline: https://Share The Bite.org/#/dashboard
+- Central Administration Console: https://Share The Bite.org/#/admin
+- Project Evaluation and Conclusion: https://Share The Bite.org/#/conclusion
+

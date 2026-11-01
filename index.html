@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#14532d" />
+  <meta name="color-scheme" content="light" />
+
+  <!-- Technical SEO and Canonical Metadata -->
+  <title>FoodShare: UN SDG 2 Zero Hunger Surplus Food Redistribution Platform</title>
+  <meta name="description"
+    content="FoodShare connects commercial kitchens, caterers, and food grocers with verified community shelters to redistribute surplus wholesome food, directly advancing UN Sustainable Development Goal 2: Zero Hunger." />
+  <link rel="canonical" href="https://foodshare.org/#/report" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+  <!-- Open Graph Metadata -->
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="FoodShare: UN SDG 2 Zero Hunger Surplus Food Redistribution Platform" />
+  <meta property="og:description"
+    content="Decentralized client-side platform connecting commercial food donors with community shelters to eliminate local food waste." />
+  <meta property="og:url" content="https://foodshare.org/#/report" />
+  <meta property="og:site_name" content="FoodShare Platform" />
+
+  <!-- Twitter Card Metadata -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="FoodShare: UN SDG 2 Zero Hunger Surplus Food Redistribution Platform" />
+  <meta name="twitter:description"
+    content="Decentralized client-side platform connecting commercial food donors with community shelters to eliminate local food waste." />
+
+  <!-- Security Directives -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- JSON-LD Structured Data: Organization & SoftwareApplication -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://foodshare.org/#organization",
+          "name": "FoodShare SDG Initiative",
+          "url": "https://foodshare.org",
+          "logo": "https://foodshare.org/logo.png",
+          "description": "Non-profit technology platform connecting food donors with hunger relief charities.",
+          "knowsAbout": ["Sustainable Development Goal 2", "Zero Hunger", "Food Waste Reduction", "IndexedDB"]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://foodshare.org/#application",
+          "name": "FoodShare Surplus Redistribution Engine",
+          "operatingSystem": "All modern web browsers",
+          "applicationCategory": "BusinessApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0.00",
+            "priceCurrency": "USD"
+          },
+          "description": "Client-synchronized food redistribution application powered by IndexedDB and LocalStorage for offline resilience."
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://foodshare.org/#website",
+          "url": "https://foodshare.org",
+          "name": "FoodShare",
+          "publisher": { "@id": "https://foodshare.org/#organization" }
+        }
+      ]
+    }
+    </script>
+
+  <!-- Preconnect and Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            emerald: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+              950: '#052e16',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Accessible focus visible outlines */
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid #15803d !important;
+      outline-offset: 2px !important;
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      ::before,
+      ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>
