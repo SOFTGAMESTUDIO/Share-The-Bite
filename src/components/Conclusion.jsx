@@ -24,7 +24,7 @@ export default function Conclusion({ onNavigate }) {
           Project Evaluation & Future Roadmap
         </h1>
         <p className="text-emerald-700 font-semibold text-base max-w-2xl mx-auto leading-relaxed">
-          Evaluating the feasibility, societal impact, and long-term technological vision of the FoodShare platform.
+          Evaluating the feasibility, societal impact, and long-term technological vision of the Share The Bite platform.
         </p>
       </div>
 
@@ -38,7 +38,7 @@ export default function Conclusion({ onNavigate }) {
             1. Technological Feasibility & Architectural Validation
           </div>
           <p className="text-sm text-gray-600 leading-relaxed">
-            The FoodShare web application confirms that a zero-cost, serverless, client-first architecture powered by <strong>IndexedDB</strong> and mirrored via <strong>LocalStorage</strong> is extraordinarily capable of handling local food rescue coordination. Donors, shelters, and administrators interact with a persistent transactional data store directly in the browser, eliminating expensive server hosting requirements while providing instantaneous responsiveness even in areas with fluctuating internet connectivity.
+            The Share The Bite web application confirms that a zero-cost, serverless, client-first architecture powered by <strong>IndexedDB</strong> and mirrored via <strong>LocalStorage</strong> is extraordinarily capable of handling local food rescue coordination. Donors, shelters, and administrators interact with a persistent transactional data store directly in the browser, eliminating expensive server hosting requirements while providing instantaneous responsiveness even in areas with fluctuating internet connectivity.
           </p>
           <div className="bg-emerald-50/60 p-5 rounded-2xl border border-emerald-100 text-xs text-emerald-950 space-y-2">
             <div className="font-bold text-emerald-900">Key Architectural Validations:</div>
@@ -57,7 +57,7 @@ export default function Conclusion({ onNavigate }) {
             2. United Nations SDG Alignment
           </div>
           <p className="text-sm text-gray-600 leading-relaxed">
-            FoodShare operates at the nexus of multiple United Nations Sustainable Development Goals:
+            Share The Bite operates at the nexus of multiple United Nations Sustainable Development Goals:
           </p>
           <div className="grid sm:grid-cols-3 gap-4 pt-2">
             <div className="bg-amber-50/60 border border-amber-200 p-4 rounded-2xl">
@@ -145,7 +145,7 @@ export default function Conclusion({ onNavigate }) {
 
         {/* Bottom CTA */}
         <div className="bg-gradient-to-r from-emerald-800 to-teal-800 text-white p-8 rounded-3xl text-center space-y-4">
-          <h3 className="text-2xl font-extrabold">Ready to explore FoodShare in action?</h3>
+          <h3 className="text-2xl font-extrabold">Ready to explore Share The Bite in action?</h3>
           <p className="text-emerald-100 text-xs max-w-lg mx-auto leading-relaxed">
             Test the entire live cycle: add a food item as a donor, claim it from the listings as an NGO, track pickup in the dashboard, and manage or clear database records in the admin panel.
           </p>

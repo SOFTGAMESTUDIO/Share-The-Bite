@@ -1,10 +1,10 @@
 // ============================================================================
-// FOODSHARE SDG-2 PLATFORM: PERSISTENT STORAGE & AUTHENTICATION LAYER
+// Share The Bite SDG-2 PLATFORM: PERSISTENT STORAGE & AUTHENTICATION LAYER
 // Dual-Engine: IndexedDB (Primary) + LocalStorage (Real-time Mirror / Fallback)
 // Includes Transactional Users & Session Stores for Role-Based Test Access
 // ============================================================================
 
-const DB_NAME = 'FoodShareAppDB';
+const DB_NAME = 'Share The BiteAppDB';
 const DB_VERSION = 2;
 const STORE_DONATIONS = 'donations';
 const STORE_LOGS = 'audit_logs';
@@ -12,21 +12,21 @@ const STORE_SETTINGS = 'app_settings';
 const STORE_USERS = 'users';
 const STORE_SESSIONS = 'sessions';
 
-const LS_KEY_DONATIONS = 'foodshare_donations_backup';
-const LS_KEY_LOGS = 'foodshare_logs_backup';
-const LS_KEY_SETTINGS = 'foodshare_settings_backup';
-const LS_KEY_USERS = 'foodshare_users_backup';
-const LS_KEY_SESSION = 'foodshare_active_session';
+const LS_KEY_DONATIONS = 'Share The Bite_donations_backup';
+const LS_KEY_LOGS = 'Share The Bite_logs_backup';
+const LS_KEY_SETTINGS = 'Share The Bite_settings_backup';
+const LS_KEY_USERS = 'Share The Bite_users_backup';
+const LS_KEY_SESSION = 'Share The Bite_active_session';
 
 // Pre-configured Test Accounts stored in IndexedDB (for demo & testing)
 export const initialTestUsers = [
   {
     id: 'usr_admin_01',
     name: 'Sarah Jenkins',
-    email: 'admin@foodshare.org',
+    email: 'admin@Share The Bite.org',
     key: 'admin123',
     role: 'admin',
-    organization: 'FoodShare Platform Oversight',
+    organization: 'Share The Bite Platform Oversight',
     phone: '+1 (555) 100-2000',
     title: 'Platform Administrator',
     avatarInitials: 'SJ',
@@ -85,6 +85,7 @@ export const initialMockDonations = [
     location: "Downtown Corporate Center, Block B, 4th Floor",
     city: "Metro Central",
     donor: "Fresh Eats Catering Co.",
+    donorType: "Catering Service",
     donorPhone: "+1 (555) 234-5678",
     donorEmail: "catering@fresheats.org",
     expiry: new Date(Date.now() + 24 * 3600 * 1000).toISOString().slice(0, 16),
@@ -103,6 +104,7 @@ export const initialMockDonations = [
     location: "Sector 17 Green Wholesale Market, Stall 42",
     city: "West District",
     donor: "Green Grocers Association",
+    donorType: "Farm Wholesale / Produce Market",
     donorPhone: "+1 (555) 345-6789",
     donorEmail: "contact@greengrocers.org",
     expiry: new Date(Date.now() + 72 * 3600 * 1000).toISOString().slice(0, 16),
@@ -121,17 +123,31 @@ export const initialMockDonations = [
     location: "Grand Plaza Hotel, Service Gate 3, Banquet Kitchen",
     city: "Metro Central",
     donor: "Grand Plaza Hotel & Suites",
+    donorType: "Hotel / Banquet Dining",
     donorPhone: "+1 (555) 456-7890",
     donorEmail: "chef@grandplazahotel.com",
     expiry: new Date(Date.now() + 10 * 3600 * 1000).toISOString().slice(0, 16),
-    status: "Pending Pickup",
-    receiver: "Hope Foundation Shelter",
+    status: "Requested",
+    receiver: "Hope Community Relief Shelter",
     receiverPhone: "+1 (555) 888-1212",
-    receiverNotes: "Volunteer van dispatched. ETA 45 minutes.",
+    receiverEmail: "shelter@hope.org",
     dietary: "Vegetarian",
     notes: "Maintained in temperature-controlled chafing dishes after lunch event.",
     urgency: "high",
-    claimedAt: new Date(Date.now() - 3600 * 1000 * 1).toISOString(),
+    receiverApplication: {
+      receiverName: "Hope Community Relief Shelter",
+      receiverType: "Homeless Shelter & Night Kitchen",
+      contactPerson: "Elena Vance (Shelter Director)",
+      receiverPhone: "+1 (555) 888-1212",
+      receiverEmail: "shelter@hope.org",
+      deliveryAddress: "742 Evergreen Terrace, North Wing Meal Hall",
+      beneficiaryCount: 45,
+      vehicleType: "Volunteer Van Available",
+      urgency: "Immediate - Dinner service tonight",
+      receiverNotes: "Providing evening dinners for 45 unhoused residents tonight. Hot meals are urgently requested.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 1.5).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 1.5).toISOString(),
     createdAt: new Date(Date.now() - 3600 * 1000 * 8).toISOString()
   },
   {
@@ -143,17 +159,34 @@ export const initialMockDonations = [
     location: "Sunrise Artisan Bakery, 104 High Street",
     city: "North Ward",
     donor: "Sunrise Artisan Bakery",
+    donorType: "Bakery & Cafe",
     donorPhone: "+1 (555) 567-8901",
     donorEmail: "orders@sunrisebakery.com",
     expiry: new Date(Date.now() + 36 * 3600 * 1000).toISOString().slice(0, 16),
     status: "Delivered",
     receiver: "Community Youth Kitchen",
     receiverPhone: "+1 (555) 999-4321",
+    receiverEmail: "youth@communitykitchen.org",
     receiverNotes: "Received in great condition and distributed to 40 families.",
     dietary: "Vegetarian",
     notes: "Baked fresh today morning, bagged individually.",
     urgency: "low",
-    claimedAt: new Date(Date.now() - 3600 * 1000 * 12).toISOString(),
+    receiverApplication: {
+      receiverName: "Community Youth Kitchen",
+      receiverType: "Youth Support Kitchen",
+      contactPerson: "Marcus Brody",
+      receiverPhone: "+1 (555) 999-4321",
+      receiverEmail: "youth@communitykitchen.org",
+      deliveryAddress: "12 Youth Center Road",
+      beneficiaryCount: 55,
+      vehicleType: "Self-Pickup",
+      urgency: "Standard",
+      receiverNotes: "Daily breakfast program for underprivileged local teens.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 12).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 12).toISOString(),
+    acceptedAt: new Date(Date.now() - 3600 * 1000 * 10).toISOString(),
+    pickedUpAt: new Date(Date.now() - 3600 * 1000 * 8).toISOString(),
     deliveredAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString(),
     createdAt: new Date(Date.now() - 3600 * 1000 * 14).toISOString()
   },
@@ -166,13 +199,34 @@ export const initialMockDonations = [
     location: "Valley Cold Storage Hub, Bay 12",
     city: "South District",
     donor: "Valley Farm Dairy Co.",
+    donorType: "Dairy Processing / Wholesale",
     donorPhone: "+1 (555) 678-9012",
     donorEmail: "dispatch@valleydairy.com",
     expiry: new Date(Date.now() + 48 * 3600 * 1000).toISOString().slice(0, 16),
-    status: "Available",
+    status: "Out for Pickup",
+    receiver: "Saint Jude Community Pantry",
+    receiverPhone: "+1 (555) 345-1234",
+    receiverEmail: "pantry@stjude.org",
     dietary: "Vegetarian / Gluten-Free",
     notes: "Refrigerated transport required. Temperature strictly 2-4°C.",
     urgency: "medium",
+    driver: "David Kim (Volunteer Driver, Green Van)",
+    receiverApplication: {
+      receiverName: "Saint Jude Community Pantry",
+      receiverType: "Community Food Pantry",
+      contactPerson: "Sister Catherine",
+      receiverPhone: "+1 (555) 345-1234",
+      receiverEmail: "pantry@stjude.org",
+      deliveryAddress: "88 Mission Street, Parish Hall",
+      beneficiaryCount: 50,
+      vehicleType: "Needs Volunteer Pickup",
+      urgency: "Standard",
+      receiverNotes: "Weekly food bag distribution for 50 low-income single-parent families.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString(),
+    acceptedAt: new Date(Date.now() - 3600 * 1000 * 2.5).toISOString(),
+    outForPickupAt: new Date(Date.now() - 3600 * 1000 * 0.5).toISOString(),
     createdAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString()
   },
   {
@@ -184,14 +238,36 @@ export const initialMockDonations = [
     location: "Metro Wholesale Supermarket, Loading Dock 2",
     city: "East Harbor",
     donor: "Metro Retail Distribution",
+    donorType: "Supermarket / Retail Chain",
     donorPhone: "+1 (555) 789-0123",
     donorEmail: "community@metromarket.com",
     expiry: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString().slice(0, 16),
-    status: "Available",
+    status: "Out for Delivery",
+    receiver: "Eastside Family Mission",
+    receiverPhone: "+1 (555) 890-1234",
+    receiverEmail: "dispatch@eastsidefamily.org",
     dietary: "Vegan / Non-Perishable",
     notes: "Surplus inventory from seasonal change. Cans unopened and sealed.",
     urgency: "low",
-    createdAt: new Date(Date.now() - 3600 * 1000 * 2).toISOString()
+    driver: "City Relief Courier Team (Van 04)",
+    receiverApplication: {
+      receiverName: "Eastside Family Mission",
+      receiverType: "Family Shelter & Relief Hub",
+      contactPerson: "Anthony Morales",
+      receiverPhone: "+1 (555) 890-1234",
+      receiverEmail: "dispatch@eastsidefamily.org",
+      deliveryAddress: "405 Harbor Way, Warehouse 3",
+      beneficiaryCount: 80,
+      vehicleType: "Van Delivery",
+      urgency: "Standard",
+      receiverNotes: "Stocking emergency food reserve for 80 families in recovery programs.",
+      appliedAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString()
+    },
+    appliedAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString(),
+    acceptedAt: new Date(Date.now() - 3600 * 1000 * 3.5).toISOString(),
+    pickedUpAt: new Date(Date.now() - 3600 * 1000 * 1.5).toISOString(),
+    outForDeliveryAt: new Date(Date.now() - 3600 * 1000 * 0.8).toISOString(),
+    createdAt: new Date(Date.now() - 3600 * 1000 * 8).toISOString()
   }
 ];
 
@@ -464,7 +540,7 @@ export async function loginUser(email, key) {
 export async function registerUser(userData) {
   const users = await getAllUsers();
   const cleanEmail = userData.email.trim().toLowerCase();
-  
+
   if (users.some(u => u.email.toLowerCase() === cleanEmail)) {
     throw new Error('An account with this email address already exists in IndexedDB.');
   }
@@ -613,7 +689,7 @@ export async function initializeStorage() {
         const seedStore = seedTx.objectStore(STORE_DONATIONS);
         donations.forEach(item => seedStore.put(item));
         writeLocalStorage(LS_KEY_DONATIONS, donations);
-        await logActivity('INITIAL_SEED', `Seeded database with ${donations.length} SDG 2 FoodShare listings.`);
+        await logActivity('INITIAL_SEED', `Seeded database with ${donations.length} SDG 2 Share The Bite listings.`);
       }
     } else {
       writeLocalStorage(LS_KEY_DONATIONS, donations);
@@ -685,20 +761,22 @@ export async function addDonation(itemData) {
     item: itemData.item || "Surplus Food Donation",
     category: itemData.category || "Cooked Meals",
     quantity: itemData.quantity || "10 servings",
-foodshare-reactD754-35D4    servings: itemData.servings ? Number(itemData.servings) : 10,
+    servings: itemData.servings ? Number(itemData.servings) : 10,
     location: itemData.location || "Community Center",
-    city: itemData.city || "Local City",
-    donor: itemData.donor || "Anonymous Donor",
+    city: itemData.city || "Metro Central",
+    donor: itemData.donor || "Anonymous Citizen / Partner",
+    donorType: itemData.donorType || "Community Partner",
     donorPhone: itemData.donorPhone || "",
     donorEmail: itemData.donorEmail || "",
     expiry: itemData.expiry || new Date(Date.now() + 24 * 3600 * 1000).toISOString().slice(0, 16),
     status: itemData.status || "Available",
-    dietary: itemData.dietary || "Standard",
+    dietary: itemData.dietary || "Standard Wholesome",
     notes: itemData.notes || "",
     urgency: itemData.urgency || "medium",
     receiver: itemData.receiver || null,
     receiverPhone: itemData.receiverPhone || null,
-    receiverNotes: itemData.receiverNotes || null,
+    receiverEmail: itemData.receiverEmail || null,
+    receiverApplication: itemData.receiverApplication || null,
     createdAt: new Date().toISOString()
   };
 
@@ -718,7 +796,7 @@ foodshare-reactD754-35D4    servings: itemData.servings ? Number(itemData.servin
 
   await logActivity(
     'DONATION_CREATED',
-    `New donation listed: "${newItem.item}" (${newItem.quantity}) by ${newItem.donor}.`,
+    `New public donation listed: "${newItem.item}" (${newItem.quantity}) by ${newItem.donor} (${newItem.donorType}).`,
     newItem.donor
   );
 
@@ -794,34 +872,195 @@ export async function deleteDonation(id) {
   return true;
 }
 
-export async function claimDonation(id, receiverInfo) {
+// ----------------------------------------------------------------------------
+// Comprehensive Service Requests Lifecycle: Apply, Accept, Reject, Pickup, Delivery
+// ----------------------------------------------------------------------------
+
+export async function applyFoodRequest(id, application) {
   const numId = Number(id);
+  const now = new Date().toISOString();
+
+  const receiverApp = {
+    receiverName: application.receiverName || 'Community Relief Partner',
+    receiverType: application.receiverType || 'Non-Profit Shelter',
+    contactPerson: application.contactPerson || 'Relief Coordinator',
+    receiverPhone: application.receiverPhone || '+1 (555) 000-0000',
+    receiverEmail: application.receiverEmail || '',
+    deliveryAddress: application.deliveryAddress || 'Central Shelter Facility',
+    beneficiaryCount: Number(application.beneficiaryCount) || 20,
+    vehicleType: application.vehicleType || 'Volunteer Van Available',
+    urgency: application.urgency || 'Immediate',
+    receiverNotes: application.receiverNotes || '',
+    appliedAt: now
+  };
+
   const updates = {
-    status: 'Pending Pickup',
-    receiver: receiverInfo.receiverName || 'Registered NGO Partner',
-    receiverPhone: receiverInfo.receiverPhone || '+1 (555) 000-0000',
-    receiverNotes: receiverInfo.receiverNotes || 'Claimed via FoodShare app for immediate redistribution.',
-    claimedAt: new Date().toISOString()
+    status: 'Requested',
+    receiver: receiverApp.receiverName,
+    receiverPhone: receiverApp.receiverPhone,
+    receiverEmail: receiverApp.receiverEmail,
+    receiverApplication: receiverApp,
+    appliedAt: now
   };
 
   const updated = await updateDonation(numId, updates);
 
   await logActivity(
-    'DONATION_CLAIMED',
-    `Donation #${numId} claimed by "${updates.receiver}" for pickup.`,
-    updates.receiver
+    'REQUEST_SUBMITTED',
+    `Receiver "${receiverApp.receiverName}" applied for donation #${numId} ("${updated?.item}") to serve ${receiverApp.beneficiaryCount} beneficiaries.`,
+    receiverApp.receiverName
   );
 
   return updated;
 }
 
-export async function updateDonationStatus(id, newStatus, actor = 'NGO Receiver') {
+export async function acceptRequest(id, adminNotes = '') {
+  const numId = Number(id);
+  const now = new Date().toISOString();
+  const updates = {
+    status: 'Request Accepted',
+    acceptedAt: now,
+    adminNotes: adminNotes || 'Request approved by System Administration. Ready for pickup dispatch.'
+  };
+
+  const updated = await updateDonation(numId, updates);
+
+  await logActivity(
+    'REQUEST_ACCEPTED',
+    `Admin accepted allocation request for donation #${numId} to "${updated?.receiver}".`,
+    'Admin Dispatcher'
+  );
+
+  return updated;
+}
+
+export async function rejectRequest(id, rejectionReason = '') {
+  const numId = Number(id);
+  const now = new Date().toISOString();
+  const existing = await getDonationById(numId);
+  const previousReceiver = existing?.receiver || 'Applicant';
+
+  const updates = {
+    status: 'Available',
+    receiver: null,
+    receiverPhone: null,
+    receiverEmail: null,
+    receiverApplication: null,
+    lastRejection: {
+      rejectedReceiver: previousReceiver,
+      reason: rejectionReason || 'Request declined due to logistical capacity or geographical constraints.',
+      rejectedAt: now
+    }
+  };
+
+  const updated = await updateDonation(numId, updates);
+
+  await logActivity(
+    'REQUEST_REJECTED',
+    `Admin rejected request from "${previousReceiver}" for donation #${numId}. Item reset to "Available". Reason: ${updates.lastRejection.reason}`,
+    'Admin Dispatcher'
+  );
+
+  return updated;
+}
+
+export async function dispatchForPickup(id, driverInfo = '') {
+  const numId = Number(id);
+  const now = new Date().toISOString();
+  const updates = {
+    status: 'Out for Pickup',
+    outForPickupAt: now,
+    driver: driverInfo || 'Assigned Logistics Driver'
+  };
+
+  const updated = await updateDonation(numId, updates);
+
+  await logActivity(
+    'OUT_FOR_PICKUP',
+    `Driver dispatched for pickup of donation #${numId} from donor "${updated?.donor}".`,
+    'Logistics Team'
+  );
+
+  return updated;
+}
+
+export async function markPickedUp(id) {
+  const numId = Number(id);
+  const now = new Date().toISOString();
+  const updates = {
+    status: 'Picked Up',
+    pickedUpAt: now
+  };
+
+  const updated = await updateDonation(numId, updates);
+
+  await logActivity(
+    'FOOD_PICKED_UP',
+    `Food donation #${numId} successfully collected from donor "${updated?.donor}".`,
+    'Logistics Team'
+  );
+
+  return updated;
+}
+
+export async function dispatchForDelivery(id) {
+  const numId = Number(id);
+  const now = new Date().toISOString();
+  const updates = {
+    status: 'Out for Delivery',
+    outForDeliveryAt: now
+  };
+
+  const updated = await updateDonation(numId, updates);
+
+  await logActivity(
+    'OUT_FOR_DELIVERY',
+    `Donation #${numId} is out for delivery en route to receiver "${updated?.receiver}".`,
+    'Logistics Team'
+  );
+
+  return updated;
+}
+
+export async function markDelivered(id, deliveryProof = '') {
+  const numId = Number(id);
+  const now = new Date().toISOString();
+  const updates = {
+    status: 'Delivered',
+    deliveredAt: now,
+    deliveryProof: deliveryProof || 'Handover signature verified at destination.'
+  };
+
+  const updated = await updateDonation(numId, updates);
+
+  await logActivity(
+    'FOOD_DELIVERED',
+    `Donation #${numId} successfully delivered to receiver "${updated?.receiver}". ${updated?.servings || 10} portions rescued!`,
+    'Logistics Team'
+  );
+
+  return updated;
+}
+
+// Backwards-compatible claim helper
+export async function claimDonation(id, receiverInfo) {
+  return applyFoodRequest(id, receiverInfo);
+}
+
+export async function updateDonationStatus(id, newStatus, actor = 'System') {
   const numId = Number(id);
   const updates = { status: newStatus };
-  if (newStatus === 'Delivered') {
-    updates.deliveredAt = new Date().toISOString();
-  } else if (newStatus === 'Picked Up') {
-    updates.pickedUpAt = new Date().toISOString();
+  const now = new Date().toISOString();
+
+  if (newStatus === 'Delivered') updates.deliveredAt = now;
+  if (newStatus === 'Picked Up') updates.pickedUpAt = now;
+  if (newStatus === 'Out for Pickup') updates.outForPickupAt = now;
+  if (newStatus === 'Out for Delivery') updates.outForDeliveryAt = now;
+  if (newStatus === 'Request Accepted') updates.acceptedAt = now;
+  if (newStatus === 'Available') {
+    updates.receiver = null;
+    updates.receiverPhone = null;
+    updates.receiverApplication = null;
   }
 
   const updated = await updateDonation(numId, updates);
@@ -889,9 +1128,9 @@ export async function exportDatabaseJSON() {
   const donations = await getAllDonations();
   const logs = await getAuditLogs();
   const users = await getAllUsers();
-  
+
   const payload = {
-    appName: "FoodShare UN SDG-2 Platform",
+    appName: "Share The Bite UN SDG-2 Platform",
     exportVersion: 2,
     exportedAt: new Date().toISOString(),
     stats: {
@@ -915,7 +1154,7 @@ export function downloadDatabaseBackup(jsonString) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `foodshare_backup_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+  a.download = `Share The Bite_backup_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -949,7 +1188,7 @@ export async function importDatabaseJSON(jsonContent) {
     try {
       const db = await openDB();
       const tx = db.transaction([STORE_DONATIONS, STORE_LOGS, STORE_USERS], 'readwrite');
-      
+
       const donStore = tx.objectStore(STORE_DONATIONS);
       donStore.clear();
       validDonations.forEach(item => donStore.put(item));

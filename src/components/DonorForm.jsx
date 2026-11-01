@@ -14,7 +14,9 @@ import {
   Apple,
   Wheat,
   Boxes,
-  UserCheck
+  UserCheck,
+  Building2,
+  AlertCircle
 } from 'lucide-react';
 import { getCategoryIcon } from '../utils/categoryIcons';
 
@@ -27,19 +29,31 @@ const CATEGORIES = [
   "Beverages"
 ];
 
+const DONOR_TYPES = [
+  "Commercial Restaurant",
+  "Hotel & Banquet Kitchen",
+  "Catering & Event Services",
+  "Supermarket / Grocery Retail",
+  "Bakery & Confectionery",
+  "Corporate / College Dining",
+  "Farm / Agriculture Wholesale",
+  "Individual Citizen / Household"
+];
+
 const QUICK_TEMPLATES = [
   {
     name: "Banquet Catering",
     category: "Cooked Meals",
-    item: "Buffet Spread: Rice, Lentil Dal and Roasted Vegetables",
+    item: "Buffet Spread: Steamed Basmati Rice, Lentil Dal and Roasted Vegetables",
     quantity: "35 portions",
     servings: 35,
     donor: "Grand Horizon Hotel Kitchen",
+    donorType: "Hotel & Banquet Kitchen",
     donorPhone: "+1 (555) 777-3322",
     donorEmail: "chef@grandhorizon.com",
     location: "450 Ocean Boulevard, Kitchen Loading Bay 2",
     city: "Metro Central",
-    dietary: "Vegetarian",
+    dietary: "Vegetarian and Halal",
     notes: "Packed in sanitized food-grade steel containers. Warm and ready for pickup.",
     hoursExpiry: 6
   },
@@ -50,6 +64,7 @@ const QUICK_TEMPLATES = [
     quantity: "25 loaves and 30 croissants",
     servings: 50,
     donor: "Golden Crust Bakery",
+    donorType: "Bakery & Confectionery",
     donorPhone: "+1 (555) 333-8899",
     donorEmail: "contact@goldencrust.com",
     location: "12 Baker Street, Shop 4",
@@ -65,6 +80,7 @@ const QUICK_TEMPLATES = [
     quantity: "30 kg assortment",
     servings: 75,
     donor: "Sun Valley Farmers Market",
+    donorType: "Farm / Agriculture Wholesale",
     donorPhone: "+1 (555) 444-1122",
     donorEmail: "farm@sunvalley.org",
     location: "Wholesale Market Gate 5, Stall 18",
@@ -80,6 +96,7 @@ const QUICK_TEMPLATES = [
     quantity: "50 packaged units",
     servings: 50,
     donor: "Cornerstone Superstore",
+    donorType: "Supermarket / Grocery Retail",
     donorPhone: "+1 (555) 999-5566",
     donorEmail: "manager@cornerstores.com",
     location: "88 Main Boulevard, Customer Service Desk",
@@ -99,6 +116,7 @@ export default function DonorForm({ onSubmit, currentUser }) {
     quantity: '',
     servings: 20,
     donor: currentUser?.organization || currentUser?.name || '',
+    donorType: 'Commercial Restaurant',
     donorPhone: currentUser?.phone || '',
     donorEmail: currentUser?.email || '',
     location: '',
@@ -129,6 +147,7 @@ export default function DonorForm({ onSubmit, currentUser }) {
       quantity: template.quantity,
       servings: template.servings,
       donor: template.donor,
+      donorType: template.donorType || 'Commercial Restaurant',
       donorPhone: template.donorPhone,
       donorEmail: template.donorEmail,
       location: template.location,
@@ -151,18 +170,22 @@ export default function DonorForm({ onSubmit, currentUser }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300">
       
       {/* Header Banner */}
-      <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-xs text-center relative overflow-hidden">
-        <div className="w-14 h-14 bg-emerald-100 text-emerald-800 rounded-xl flex items-center justify-center mx-auto mb-4 border border-emerald-200">
-          <HeartHandshake size={28} />
+      <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-sm text-center relative overflow-hidden">
+        
+        {/* Open Access Pill */}
+        <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3.5 py-1.5 rounded-full text-xs font-bold mb-4 shadow-xs">
+          <Sparkles size={14} className="text-emerald-600" />
+          <span>Open Public Intake: Donate Food Without An Account</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-          List Surplus Food For Immediate Rescue
+
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          List Surplus Food For Immediate Relief Rescue
         </h1>
-        <p className="text-slate-600 mt-2 max-w-xl mx-auto text-sm leading-relaxed">
-          Every meal registered here is instantly synchronized to the client-side IndexedDB database and made available to verified local relief shelters and community kitchens.
+        <p className="text-slate-600 mt-2 max-w-2xl mx-auto text-sm leading-relaxed">
+          Anyone can donate wholesome meals, fresh produce, or pantry surplus. No sign-up or login is required. Every submission is saved locally in IndexedDB and made available to verified relief shelters.
         </p>
 
         {/* Quick Fill Templates */}
@@ -177,7 +200,7 @@ export default function DonorForm({ onSubmit, currentUser }) {
                 key={tmpl.name}
                 type="button"
                 onClick={() => applyTemplate(tmpl)}
-                className="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:outline-none"
+                className="bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-slate-800 hover:text-emerald-900 text-xs font-semibold px-3.5 py-2 rounded-xl transition-all flex items-center gap-2 shadow-2xs hover:scale-102"
               >
                 {getCategoryIcon(tmpl.category, 14)}
                 <span>{tmpl.name}</span>
@@ -188,18 +211,18 @@ export default function DonorForm({ onSubmit, currentUser }) {
       </div>
 
       {/* Main Intake Form */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-8 border border-slate-200 shadow-xs space-y-6">
+      <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-sm space-y-6">
         
-        {/* Authenticated user prefill banner */}
+        {/* Authenticated user prefill banner if logged in */}
         {currentUser && (
-          <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-emerald-950">
-            <div className="flex items-center gap-2">
-              <UserCheck size={16} className="text-emerald-700 shrink-0" />
+          <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-emerald-950">
+            <div className="flex items-center gap-2.5">
+              <UserCheck size={18} className="text-emerald-700 shrink-0" />
               <span>
-                Authenticated as <strong>{currentUser.name}</strong> ({currentUser.role} &bull; {currentUser.organization}). Contact details auto-linked.
+                Signed in as <strong>{currentUser.name}</strong> ({currentUser.role} &bull; {currentUser.organization}). Contact details auto-linked.
               </span>
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 self-start sm:self-auto">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full border border-emerald-300 self-start sm:self-auto">
               Verified Session
             </span>
           </div>
@@ -221,10 +244,10 @@ export default function DonorForm({ onSubmit, currentUser }) {
               <input
                 required
                 type="text"
-                placeholder="e.g. 3 Trays of Freshly Cooked Veg Lasagna and Bread"
+                placeholder="e.g. 40 Trays of Freshly Cooked Rice, Dal & Roasted Vegetables"
                 value={formData.item}
                 onChange={(e) => setFormData({ ...formData, item: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
               />
             </div>
 
@@ -235,7 +258,7 @@ export default function DonorForm({ onSubmit, currentUser }) {
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors bg-white"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors bg-white"
               >
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -250,10 +273,10 @@ export default function DonorForm({ onSubmit, currentUser }) {
               <input
                 required
                 type="text"
-                placeholder="e.g. 35 portions, or 15 kg box"
+                placeholder="e.g. 40 portions, or 20 kg assortment"
                 value={formData.quantity}
                 onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
               />
             </div>
 
@@ -267,20 +290,20 @@ export default function DonorForm({ onSubmit, currentUser }) {
                 max="5000"
                 value={formData.servings}
                 onChange={(e) => setFormData({ ...formData, servings: Number(e.target.value) })}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                Dietary and Allergen Specifications
+                Dietary & Allergen Specifications
               </label>
               <input
                 type="text"
                 placeholder="e.g. Vegetarian, Halal, Nut-Free, 100% Vegan"
                 value={formData.dietary}
                 onChange={(e) => setFormData({ ...formData, dietary: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
               />
             </div>
 
@@ -302,7 +325,7 @@ export default function DonorForm({ onSubmit, currentUser }) {
                 type="datetime-local"
                 value={formData.expiry}
                 onChange={(e) => setFormData({ ...formData, expiry: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
               />
             </div>
 
@@ -313,22 +336,84 @@ export default function DonorForm({ onSubmit, currentUser }) {
         <div className="pt-4">
           <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100 flex items-center gap-2">
             <MapPin size={17} className="text-emerald-700" />
-            <span>2. Donor Organization and Pickup Logistics</span>
+            <span>2. Donor Identity & Pickup Logistics</span>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
             
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                Donor / Organization Name <span className="text-rose-500">*</span>
+                Donor / Business / Individual Name <span className="text-rose-500">*</span>
               </label>
               <input
                 required
                 type="text"
-                placeholder="e.g. Bella Italia Bistro, Metro Banquet Hall"
+                placeholder="e.g. Grand Horizon Hotel Kitchen or Jane Doe"
                 value={formData.donor}
                 onChange={(e) => setFormData({ ...formData, donor: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                Donor Entity Type
+              </label>
+              <select
+                value={formData.donorType}
+                onChange={(e) => setFormData({ ...formData, donorType: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors bg-white"
+              >
+                {DONOR_TYPES.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                Coordinator Phone Number <span className="text-rose-500">*</span>
+              </label>
+              <div className="relative">
+                <Phone size={15} className="absolute left-3.5 top-3.5 text-slate-400" />
+                <input
+                  required
+                  type="tel"
+                  placeholder="+1 (555) 000-0000"
+                  value={formData.donorPhone}
+                  onChange={(e) => setFormData({ ...formData, donorPhone: e.target.value })}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                Email Address (Optional)
+              </label>
+              <div className="relative">
+                <Mail size={15} className="absolute left-3.5 top-3.5 text-slate-400" />
+                <input
+                  type="email"
+                  placeholder="chef@grandhorizon.com"
+                  value={formData.donorEmail}
+                  onChange={(e) => setFormData({ ...formData, donorEmail: e.target.value })}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
+                />
+              </div>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                Exact Pickup Address & Loading Bay Instructions <span className="text-rose-500">*</span>
+              </label>
+              <input
+                required
+                type="text"
+                placeholder="Street address, building floor, service gate, or pickup instructions"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
               />
             </div>
 
@@ -341,89 +426,45 @@ export default function DonorForm({ onSubmit, currentUser }) {
                 placeholder="e.g. Metro Central, West District"
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
               />
             </div>
 
-            <div className="md:col-span-2">
+            <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                Exact Pickup Address & Loading Bay Instructions <span className="text-rose-500">*</span>
+                Food Storage & Handling Notes
               </label>
               <input
-                required
                 type="text"
-                placeholder="Street address, gate number, building floor, or landmark"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                Coordinator Phone Number
-              </label>
-              <div className="relative">
-                <Phone size={15} className="absolute left-3.5 top-3.5 text-slate-400" />
-                <input
-                  type="tel"
-                  placeholder="+1 (555) 000-0000"
-                  value={formData.donorPhone}
-                  onChange={(e) => setFormData({ ...formData, donorPhone: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail size={15} className="absolute left-3.5 top-3.5 text-slate-400" />
-                <input
-                  type="email"
-                  placeholder="coordinator@donor.org"
-                  value={formData.donorEmail}
-                  onChange={(e) => setFormData({ ...formData, donorEmail: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
-                />
-              </div>
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                Special Handling and Temperature Notes
-              </label>
-              <textarea
-                rows={2}
-                placeholder="e.g. Bring insulated heat bags or portable cooler. Check in at kitchen receiving dock."
+                placeholder="e.g. Refrigerated transport required (2-4°C) or Keep warm"
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-sm font-medium transition-colors"
               />
             </div>
 
           </div>
         </div>
 
-        {/* Submit Action */}
+        {/* Submit Actions */}
         <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <Info size={15} className="text-emerald-700 flex-shrink-0" />
-            <span>Persisted directly to <strong>IndexedDB</strong> with real-time <strong>LocalStorage</strong> sync.</span>
+          <div className="text-xs text-slate-500 flex items-center gap-1.5">
+            <Info size={14} className="text-emerald-700 shrink-0" />
+            <span>Listing is committed directly to your browser's IndexedDB and open for local relief claims.</span>
           </div>
 
           <button
             type="submit"
-            className="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 text-white font-semibold px-7 py-3 rounded-lg shadow-xs transition-colors flex items-center justify-center gap-2 text-sm focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:outline-none"
+            className="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 text-white font-bold px-7 py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm"
           >
+            <HeartHandshake size={17} />
             <span>Publish Food Listing</span>
-            <ArrowRight size={16} />
+            <ArrowRight size={15} />
           </button>
         </div>
 
       </form>
+
     </div>
   );
 }

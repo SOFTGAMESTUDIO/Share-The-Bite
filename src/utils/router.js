@@ -7,12 +7,12 @@
 import { useState, useEffect } from 'react';
 
 export function parseHash() {
-  const hash = window.location.hash || '#/report';
+  const hash = window.location.hash || '#/home';
   const clean = hash.replace(/^#\/?/, ''); // e.g. "admin?tab=database" or "listings/102"
   const [pathPart, queryPart] = clean.split('?');
 
   const segments = pathPart ? pathPart.split('/').filter(Boolean) : [];
-  const route = segments[0] || 'report';
+  const route = segments[0] || 'home';
   const subRoute = segments[1] || null;
 
   const query = {};

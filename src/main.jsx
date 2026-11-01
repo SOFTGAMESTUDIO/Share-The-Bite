@@ -5,6 +5,7 @@ import {
   getAllDonations,
   addDonation,
   claimDonation,
+  applyFoodRequest,
   updateDonationStatus,
   getCurrentUser,
   logoutUser,
@@ -12,26 +13,26 @@ import {
 } from './db/storage';
 import { useHashRoute, navigateTo } from './utils/router';
 
-// Subcomponents
+// Styling & Subcomponents
 import './style.css';
 import Navbar from './components/Navbar';
 import Toast from './components/Toast';
-import ProjectReport from './components/ProjectReport';
-import DonorForm from './components/DonorForm';
+import HomePage from './components/HomePage';
 import FoodListings from './components/FoodListings';
-import ReceiverDashboard from './components/ReceiverDashboard';
+import DonorForm from './components/DonorForm';
 import AdminPanel from './components/AdminPanel';
+import ProjectReport from './components/ProjectReport';
 import Conclusion from './components/Conclusion';
-import LoginModal from './components/LoginModal';
+import AdminLoginModal from './components/AdminLoginModal';
 
 export default function App() {
   const { route, navigate } = useHashRoute();
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toasts, setToasts] = useState([]);
-  const [currentRole, setCurrentRole] = useState('admin');
   const [currentUser, setCurrentUser] = useState(null);
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [adminLoginModalOpen, setAdminLoginModalOpen] = useState(false);
+  const [selectedRequestItem, setSelectedRequestItem] = useState(null);
 
   // Helper: Trigger Toast Notification
   const showToast = useCallback(({ type = 'success', title = '', message = '' }) => {
@@ -66,9 +67,8 @@ export default function App() {
         const initial = await initializeStorage();
         setDonations(initial);
         const activeUser = getCurrentUser();
-        if (activeUser) {
+        if (activeUser && activeUser.role === 'admin') {
           setCurrentUser(activeUser);
-          setCurrentRole(activeUser.role);
         }
       } catch (err) {
         console.error('Storage initialization failed:', err);
@@ -79,50 +79,50 @@ export default function App() {
     boot();
   }, []);
 
-  // Handler: Login Success (from LoginModal)
+  // Handler: Admin Login Success
   const handleLoginSuccess = (user) => {
     setCurrentUser(user);
-    setCurrentRole(user.role);
     showToast({
       type: 'success',
-      title: `Welcome back, ${user.name}!`,
-      message: `Authenticated with role "${user.role}" via IndexedDB session.`
+      title: 'Administrator Authenticated',
+      message: `Welcome, ${user.name}! Central Control Center is now unlocked.`
     });
+    navigate('admin');
   };
 
-  // Handler: Logout
+  // Handler: Admin Logout
   const handleLogout = async () => {
     await logoutUser();
     setCurrentUser(null);
-    setCurrentRole('public');
     showToast({
       type: 'info',
       title: 'Signed Out',
-      message: 'Active session cleared from IndexedDB & LocalStorage.'
+      message: 'Administrator session cleared from IndexedDB & LocalStorage.'
     });
+    navigate('home');
   };
 
-  // Handler: 1-Click Quick Switch Test Account
-  const handleQuickSwitch = async (roleOrEmail) => {
+  // Handler: 1-Click Fast Switch to Administrator
+  const handleQuickSwitch = async (roleOrEmail = 'admin') => {
     try {
       const user = await switchTestAccount(roleOrEmail);
       setCurrentUser(user);
-      setCurrentRole(user.role);
       showToast({
         type: 'success',
-        title: `Switched to ${user.name}`,
-        message: `Active persona: ${user.role} (${user.email}). Stored in IndexedDB.`
+        title: `Administrator Active: ${user.name}`,
+        message: 'Admin permissions verified from IndexedDB credentials.'
       });
+      navigate('admin');
     } catch (err) {
       showToast({
         type: 'error',
-        title: 'Switch Failed',
+        title: 'Authentication Failed',
         message: err.message
       });
     }
   };
 
-  // Handler: Add New Donation
+  // Handler: Add New Donation (Public or Admin)
   const handleAddDonation = async (formData) => {
     try {
       const created = await addDonation(formData);
@@ -130,7 +130,7 @@ export default function App() {
       showToast({
         type: 'success',
         title: 'Donation Listed Successfully!',
-        message: `"${created.item}" is now saved to IndexedDB & ready for local NGOs to claim.`
+        message: `"${created.item}" is saved to IndexedDB and ready for local shelters to claim.`
       });
       navigate('listings');
     } catch (err) {
@@ -142,43 +142,35 @@ export default function App() {
     }
   };
 
-  // Handler: Claim Donation
-  const handleClaimDonation = async (id, receiverInfo) => {
+  // Handler: Apply Food Request (Comprehensive Form)
+  const handleApplyRequest = async (id, application) => {
     try {
-      const updated = await claimDonation(id, receiverInfo);
+      const updated = await applyFoodRequest(id, application);
       await loadDonations();
       showToast({
         type: 'success',
-        title: 'Food Donation Claimed!',
-        message: `Claimed by "${receiverInfo.receiverName}". Track pickup in your Receiver Dashboard.`
+        title: 'Relief Request Submitted!',
+        message: `Application from "${application.receiverName}" for ${application.beneficiaryCount || 20} beneficiaries sent to Admin for dispatch.`
       });
-      navigate('dashboard');
+      navigate('listings');
     } catch (err) {
       showToast({
         type: 'error',
-        title: 'Claim Failed',
+        title: 'Application Error',
         message: err.message
       });
     }
   };
 
-  // Handler: Update Status (Pending Pickup -> Picked Up -> Delivered)
-  const handleUpdateStatus = async (id, newStatus) => {
-    try {
-      await updateDonationStatus(id, newStatus, currentRole);
-      await loadDonations();
-      showToast({
-        type: 'success',
-        title: 'Status Updated',
-        message: `Listing status advanced to "${newStatus}" in IndexedDB & LocalStorage.`
-      });
-    } catch (err) {
-      showToast({
-        type: 'error',
-        title: 'Status Update Error',
-        message: err.message
-      });
-    }
+  // Handler: Claim Donation (Backwards compatible)
+  const handleClaimDonation = async (id, receiverInfo) => {
+    return handleApplyRequest(id, receiverInfo);
+  };
+
+  // Quick action from Home page: "Request This Food"
+  const handleHomeApplyRequest = (item) => {
+    setSelectedRequestItem(item);
+    navigate('listings');
   };
 
   // Calculate stats for report & headers
@@ -193,19 +185,20 @@ export default function App() {
     delivered: deliveredCount
   };
 
+  const isAdmin = currentUser && currentUser.role === 'admin';
+
   return (
-    <div className="min-h-screen bg-slate-50 text-gray-800 flex flex-col font-sans selection:bg-emerald-200 selection:text-emerald-900">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-emerald-200 selection:text-emerald-900">
 
       {/* Navigation Bar */}
       <Navbar
         activeRoute={route}
         onNavigate={navigate}
         availableCount={availableCount}
-        claimedCount={claimedCount}
+        isAdmin={isAdmin}
         currentUser={currentUser}
-        onOpenLogin={() => setLoginModalOpen(true)}
+        onOpenAdminLogin={() => setAdminLoginModalOpen(true)}
         onLogout={handleLogout}
-        onQuickSwitch={handleQuickSwitch}
       />
 
       {/* Main Content Area */}
@@ -217,31 +210,38 @@ export default function App() {
           </div>
         ) : (
           <>
-            {route === 'report' && (
-              <ProjectReport onNavigate={navigate} stats={stats} />
+            {/* 1st: Home Page */}
+            {route === 'home' && (
+              <HomePage
+                donations={donations}
+                onNavigate={navigate}
+                onOpenApplyModal={handleHomeApplyRequest}
+                onOpenAdminLogin={() => setAdminLoginModalOpen(true)}
+                isAdmin={isAdmin}
+              />
             )}
+
+            {/* 2nd: All Products / Listings */}
+            {route === 'listings' && (
+              <FoodListings
+                donations={donations}
+                onApplyRequest={handleApplyRequest}
+                onClaim={handleClaimDonation}
+                onNavigate={navigate}
+                currentUser={currentUser}
+                initialRequestItem={selectedRequestItem}
+              />
+            )}
+
+            {/* 3rd: Public Donor Intake Form */}
             {route === 'donor' && (
               <DonorForm
                 onSubmit={handleAddDonation}
                 currentUser={currentUser}
               />
             )}
-            {route === 'listings' && (
-              <FoodListings
-                donations={donations}
-                onClaim={handleClaimDonation}
-                onNavigate={navigate}
-                currentUser={currentUser}
-              />
-            )}
-            {route === 'dashboard' && (
-              <ReceiverDashboard
-                donations={donations}
-                onUpdateStatus={handleUpdateStatus}
-                onNavigate={navigate}
-                currentUser={currentUser}
-              />
-            )}
+
+            {/* 4th: Admin Control Panel (Only By Admin Control) */}
             {route === 'admin' && (
               <AdminPanel
                 donations={donations}
@@ -250,9 +250,16 @@ export default function App() {
                 onNavigate={navigate}
                 currentUser={currentUser}
                 onSwitchUser={handleQuickSwitch}
-                onOpenLogin={() => setLoginModalOpen(true)}
+                onOpenLogin={() => setAdminLoginModalOpen(true)}
               />
             )}
+
+            {/* Project Report */}
+            {route === 'report' && (
+              <ProjectReport onNavigate={navigate} stats={stats} />
+            )}
+
+            {/* Conclusion & Evaluation */}
             {route === 'conclusion' && (
               <Conclusion onNavigate={navigate} />
             )}
@@ -263,30 +270,31 @@ export default function App() {
       {/* Toast Notification Container */}
       <Toast toasts={toasts} onDismiss={dismissToast} />
 
-      {/* Login & Auth Manager Modal */}
-      <LoginModal
-        isOpen={loginModalOpen}
-        onClose={() => setLoginModalOpen(false)}
+      {/* 5th: The Admin Login ONLY Modal */}
+      <AdminLoginModal
+        isOpen={adminLoginModalOpen}
+        onClose={() => setAdminLoginModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
-        currentUser={currentUser}
       />
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-auto py-8 text-xs text-gray-500">
+      {/* Professional Footer */}
+      <footer className="bg-white border-t border-slate-200 mt-auto py-8 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span><strong>FoodShare Platform</strong>: Aligned with UN SDG 2 (Zero Hunger)</span>
+            <span><strong>Share The Bite Platform</strong> &bull; UN SDG 2 (Zero Hunger) &bull; IndexedDB Active</span>
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-medium">
-            <button onClick={() => navigate('report')} className="hover:text-emerald-700 transition-colors">Report</button>
-            <span>•</span>
-            <button onClick={() => navigate('listings')} className="hover:text-emerald-700 transition-colors">Listings ({availableCount})</button>
-            <span>•</span>
-            <button onClick={() => navigate('admin')} className="hover:text-emerald-700 transition-colors font-bold text-emerald-800">Admin Control</button>
-            <span>•</span>
-            <button onClick={() => navigate('conclusion')} className="hover:text-emerald-700 transition-colors">Evaluation</button>
+          <div className="flex items-center gap-4 text-xs font-semibold">
+            <button onClick={() => navigate('home')} className="hover:text-emerald-800 transition-colors">Home</button>
+            <span>&bull;</span>
+            <button onClick={() => navigate('listings')} className="hover:text-emerald-800 transition-colors">All Products ({availableCount})</button>
+            <span>&bull;</span>
+            <button onClick={() => navigate('donor')} className="hover:text-emerald-800 transition-colors">+ Donate Food</button>
+            <span>&bull;</span>
+            <button onClick={() => navigate('admin')} className="hover:text-emerald-800 transition-colors text-emerald-900 font-bold">Admin Control</button>
+            <span>&bull;</span>
+            <button onClick={() => navigate('report')} className="hover:text-emerald-800 transition-colors">SDG 2 Report</button>
           </div>
         </div>
       </footer>

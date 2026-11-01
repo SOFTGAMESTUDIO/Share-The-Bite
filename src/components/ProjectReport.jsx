@@ -118,7 +118,7 @@ export default function ProjectReport({ onNavigate, stats }) {
                     </div>
                     <div>
                       <div className="font-semibold text-slate-200">IndexedDB Database</div>
-                      <div className="text-[11px] text-slate-400">FoodShareAppDB Object Store & LocalStorage Mirror</div>
+                      <div className="text-[11px] text-slate-400">Share The BiteAppDB Object Store & LocalStorage Mirror</div>
                     </div>
                   </div>
                   <RefreshCw size={14} className="text-blue-400 animate-spin" />
@@ -249,7 +249,7 @@ export default function ProjectReport({ onNavigate, stats }) {
           <div className="border border-emerald-100 bg-emerald-50/40 rounded-xl p-6 space-y-3">
             <div className="flex items-center gap-2 text-emerald-950 font-bold text-sm">
               <CheckCircle2 size={18} className="text-emerald-700" />
-              <span>The FoodShare Technological Solution</span>
+              <span>The Share The Bite Technological Solution</span>
             </div>
             <ul className="space-y-2 text-xs text-slate-700">
               <li className="flex items-start gap-2">
@@ -290,7 +290,7 @@ export default function ProjectReport({ onNavigate, stats }) {
         </div>
 
         <p className="text-slate-600 text-sm leading-relaxed">
-          FoodShare operates as a resilient, client-synchronized single page application. To eliminate dependencies on centralized server infrastructure while retaining persistent transactional guarantees, the application implements a dual-tier storage strategy.
+          Share The Bite operates as a resilient, client-synchronized single page application. To eliminate dependencies on centralized server infrastructure while retaining persistent transactional guarantees, the application implements a dual-tier storage strategy.
         </p>
 
         <div className="grid md:grid-cols-3 gap-6 pt-2">
@@ -301,7 +301,7 @@ export default function ProjectReport({ onNavigate, stats }) {
             </div>
             <h3 className="font-bold text-slate-900 text-sm">IndexedDB Object Store</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Transactional browser database named <code>FoodShareAppDB</code> maintaining structured object stores for food donations, activity logs, users, and settings with indices on status, category, and creation date.
+              Transactional browser database named <code>Share The BiteAppDB</code> maintaining structured object stores for food donations, activity logs, users, and settings with indices on status, category, and creation date.
             </p>
           </div>
 
@@ -412,7 +412,7 @@ export default function ProjectReport({ onNavigate, stats }) {
               <h3 className="font-bold text-slate-900 text-sm">Universal Access to Safe Food</h3>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              By 2030, end hunger and ensure access by all people, in particular the poor and people in vulnerable situations, to safe, nutritious and sufficient food all year round. FoodShare contributes directly by channeling high-grade surplus meals from commercial dining rooms to vulnerable populations.
+              By 2030, end hunger and ensure access by all people, in particular the poor and people in vulnerable situations, to safe, nutritious and sufficient food all year round. Share The Bite contributes directly by channeling high-grade surplus meals from commercial dining rooms to vulnerable populations.
             </p>
           </div>
 
@@ -424,7 +424,7 @@ export default function ProjectReport({ onNavigate, stats }) {
               <h3 className="font-bold text-slate-900 text-sm">Halving Global Food Waste</h3>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              By 2030, halve per capita global food waste at the retail and consumer levels and reduce food losses along production and supply chains. FoodShare prevents retail and commercial food from entering municipal waste streams, preserving resources expended during agriculture and transport.
+              By 2030, halve per capita global food waste at the retail and consumer levels and reduce food losses along production and supply chains. Share The Bite prevents retail and commercial food from entering municipal waste streams, preserving resources expended during agriculture and transport.
             </p>
           </div>
 

@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { 
-  ShieldCheck, 
-  UserCheck, 
-  Key, 
-  Mail, 
-  Building2, 
-  Phone, 
-  X, 
-  ArrowRight, 
-  CheckCircle2, 
+import {
+  ShieldCheck,
+  UserCheck,
+  Key,
+  Mail,
+  Building2,
+  Phone,
+  X,
+  ArrowRight,
+  CheckCircle2,
   AlertCircle,
   Sparkles,
   Users,
@@ -89,7 +89,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, currentUse
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden space-y-0">
-        
+
         {/* Modal Header */}
         <div className="p-6 bg-slate-900 text-white flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -97,7 +97,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, currentUse
               <Key size={18} />
             </div>
             <div>
-              <h2 className="font-bold text-base text-white">FoodShare Authentication</h2>
+              <h2 className="font-bold text-base text-white">Share The Bite Authentication</h2>
               <p className="text-xs text-slate-300">IndexedDB Identity and Test Base Engine</p>
             </div>
           </div>
@@ -114,33 +114,30 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, currentUse
           <button
             type="button"
             onClick={() => { setActiveTab('test_accounts'); setErrorMsg(''); }}
-            className={`flex-1 py-3 text-center border-b-2 transition-colors ${
-              activeTab === 'test_accounts' 
-                ? 'border-emerald-700 text-emerald-800 bg-white font-bold' 
+            className={`flex-1 py-3 text-center border-b-2 transition-colors ${activeTab === 'test_accounts'
+                ? 'border-emerald-700 text-emerald-800 bg-white font-bold'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
+              }`}
           >
             1-Click Test Accounts
           </button>
           <button
             type="button"
             onClick={() => { setActiveTab('sign_in'); setErrorMsg(''); }}
-            className={`flex-1 py-3 text-center border-b-2 transition-colors ${
-              activeTab === 'sign_in' 
-                ? 'border-emerald-700 text-emerald-800 bg-white font-bold' 
+            className={`flex-1 py-3 text-center border-b-2 transition-colors ${activeTab === 'sign_in'
+                ? 'border-emerald-700 text-emerald-800 bg-white font-bold'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
+              }`}
           >
             Direct Sign In
           </button>
           <button
             type="button"
             onClick={() => { setActiveTab('register'); setErrorMsg(''); }}
-            className={`flex-1 py-3 text-center border-b-2 transition-colors ${
-              activeTab === 'register' 
-                ? 'border-emerald-700 text-emerald-800 bg-white font-bold' 
+            className={`flex-1 py-3 text-center border-b-2 transition-colors ${activeTab === 'register'
+                ? 'border-emerald-700 text-emerald-800 bg-white font-bold'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
+              }`}
           >
             Register Account
           </button>
@@ -155,7 +152,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, currentUse
         )}
 
         <div className="p-6">
-          
+
           {/* TAB 1: 1-CLICK PRE-CONFIGURED TEST ACCOUNTS */}
           {activeTab === 'test_accounts' && (
             <div className="space-y-4">
@@ -167,25 +164,23 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, currentUse
                 {initialTestUsers.map((testAcc) => {
                   const isCurrent = currentUser?.email === testAcc.email;
                   return (
-                    <div 
+                    <div
                       key={testAcc.id}
-                      className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between space-y-2.5 ${
-                        isCurrent 
-                          ? 'border-emerald-500 bg-emerald-50/50 shadow-2xs' 
+                      className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between space-y-2.5 ${isCurrent
+                          ? 'border-emerald-500 bg-emerald-50/50 shadow-2xs'
                           : 'border-slate-200 bg-slate-50/60 hover:bg-slate-100/80 hover:border-slate-300'
-                      }`}
+                        }`}
                     >
                       <div>
                         <div className="flex items-center justify-between">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
-                            testAcc.role === 'admin' 
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${testAcc.role === 'admin'
                               ? 'bg-amber-100 text-amber-900 border-amber-200'
                               : testAcc.role === 'donor'
-                              ? 'bg-emerald-100 text-emerald-900 border-emerald-200'
-                              : testAcc.role === 'receiver'
-                              ? 'bg-blue-100 text-blue-900 border-blue-200'
-                              : 'bg-indigo-100 text-indigo-900 border-indigo-200'
-                          }`}>
+                                ? 'bg-emerald-100 text-emerald-900 border-emerald-200'
+                                : testAcc.role === 'receiver'
+                                  ? 'bg-blue-100 text-blue-900 border-blue-200'
+                                  : 'bg-indigo-100 text-indigo-900 border-indigo-200'
+                            }`}>
                             {testAcc.badge}
                           </span>
                           {isCurrent && (
@@ -208,11 +203,10 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, currentUse
                         type="button"
                         disabled={loading}
                         onClick={() => handleTestLogin(testAcc.role)}
-                        className={`w-full py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 ${
-                          isCurrent 
-                            ? 'bg-emerald-700 text-white cursor-default' 
+                        className={`w-full py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 ${isCurrent
+                            ? 'bg-emerald-700 text-white cursor-default'
                             : 'bg-slate-900 hover:bg-slate-800 text-white'
-                        }`}
+                          }`}
                       >
                         <span>{isCurrent ? 'Current Session' : `Login as ${testAcc.role}`}</span>
                         <ArrowRight size={13} />
@@ -242,7 +236,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, currentUse
                     type="email"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
-                    placeholder="e.g. admin@foodshare.org or donor@fresheats.org"
+                    placeholder="e.g. admin@Share The Bite.org or donor@fresheats.org"
                     className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-xs outline-none"
                   />
                 </div>
@@ -294,7 +288,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, currentUse
               </div>
 
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-[11px] text-slate-600">
-                <strong>Demo Hint:</strong> Use <code>admin@foodshare.org</code> with key <code>admin123</code> for full administrative access.
+                <strong>Demo Hint:</strong> Use <code>admin@Share The Bite.org</code> with key <code>admin123</code> for full administrative access.
               </div>
             </form>
           )}

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FoodShare Platform: Production Stylesheet & Animation Tokens
+   Share The Bite Platform: Production Stylesheet & Animation Tokens
    ========================================================================== */
 
 /* GPU-accelerated entrance keyframes */
@@ -44,6 +44,20 @@ select:focus-visible,
 textarea:focus-visible {
   outline: 2px solid #15803d;
   outline-offset: 2px;
+}
+
+/* Subtle shadows and blurs */
+.shadow-2xs {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+}
+
+.shadow-xs {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.backdrop-blur-xs {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 /* Screen reader only utility */
