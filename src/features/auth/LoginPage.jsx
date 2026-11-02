@@ -255,19 +255,20 @@ export default function LoginPage({ onLoginSuccess, showToast, currentUser }) {
           </form>
 
           {/* Engine & Security Badges Footer */}
-          <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
-            <div className="flex items-center gap-1.5">
-              <Cloud size={13} className="text-emerald-600" />
-              <span>Firebase Cloud Auth</span>
+          <div className="pt-4 border-t border-slate-100 flex flex-col gap-2 text-[11px] text-slate-500">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 font-bold text-emerald-800">
+                <ShieldCheck size={14} className="text-emerald-600" />
+                <span>Firebase Authentication (firebase/auth)</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-emerald-700 font-semibold">Cloud Auth Active</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <Database size={13} className="text-emerald-600" />
-              <span>Triple-Engine Storage</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-emerald-700 font-semibold">Online & Synced</span>
-            </div>
+            <p className="text-[10px] text-slate-500 leading-normal">
+              Admin identity is verified exclusively through Firebase Authentication (<code className="bg-slate-100 px-1 py-0.5 rounded text-slate-700 font-mono">signInWithEmailAndPassword</code>). Firebase Storage is not used for authentication credentials.
+            </p>
           </div>
 
         </div>

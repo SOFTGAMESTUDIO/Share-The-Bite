@@ -550,7 +550,7 @@ export default function AdminPanel({
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-left space-y-2">
             <div className="font-bold text-slate-800 flex items-center gap-1.5">
               <Key size={14} className="text-emerald-700" />
-              <span>Standard Admin Credentials (Stored in IndexedDB):</span>
+              <span>Standard Admin Credentials (Firebase Authentication):</span>
             </div>
             <div className="grid sm:grid-cols-2 gap-2 pt-1 font-mono text-[11px] text-slate-700">
               <div className="bg-white p-2.5 rounded-xl border border-slate-200">

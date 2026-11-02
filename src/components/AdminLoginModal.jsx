@@ -169,11 +169,17 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
                 disabled={loading}
                 className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 px-4 rounded-xl transition-all shadow-xs flex items-center justify-center gap-2"
               >
-                <span>Authorize Admin Session</span>
+                <span>Authorize with Firebase Auth</span>
                 <ArrowRight size={15} />
               </button>
             </div>
           </form>
+
+          {/* Security & Provider Disclosure */}
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+            <span className="font-semibold text-emerald-700">Firebase Authentication (firebase/auth)</span>
+            <span>Cloud Auth Active</span>
+          </div>
 
         </div>
       </div>
