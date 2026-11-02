@@ -11,14 +11,14 @@ import { getStorage } from "firebase/storage";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyDp7T59JiLgt3HaZCGZZtaI1sYATT79EH0",
-  authDomain: "e-connect-sgs.firebaseapp.com",
-  databaseURL: "https://e-connect-sgs-default-rtdb.firebaseio.com",
-  projectId: "e-connect-sgs",
-  storageBucket: "e-connect-sgs.firebasestorage.app",
-  messagingSenderId: "101128987118",
-  appId: "1:101128987118:web:3ec413612a57e697806eff",
-  measurementId: "G-VYJL9RWGBD"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY ,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL ,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID ,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID ,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID ,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID 
 };
 
 // Initialize or reuse existing Firebase app instance
