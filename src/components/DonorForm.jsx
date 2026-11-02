@@ -185,7 +185,7 @@ export default function DonorForm({ onSubmit, currentUser }) {
           List Surplus Food For Immediate Relief Rescue
         </h1>
         <p className="text-slate-600 mt-2 max-w-2xl mx-auto text-sm leading-relaxed">
-          Anyone can donate wholesome meals, fresh produce, or pantry surplus. No sign-up or login is required. Every submission is saved locally in IndexedDB and made available to verified relief shelters.
+          Anyone can donate wholesome meals, fresh produce, or pantry surplus. No sign-up or login is required. Every submission is saved directly to Firebase Cloud Firestore and made available to verified relief shelters.
         </p>
 
         {/* Quick Fill Templates */}
@@ -450,7 +450,7 @@ export default function DonorForm({ onSubmit, currentUser }) {
         <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-xs text-slate-500 flex items-center gap-1.5">
             <Info size={14} className="text-emerald-700 shrink-0" />
-            <span>Listing is committed directly to your browser's IndexedDB and open for local relief claims.</span>
+            <span>Listing is committed directly to Firebase Cloud Firestore and open for relief claims.</span>
           </div>
 
           <button

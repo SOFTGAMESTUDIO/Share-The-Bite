@@ -5,55 +5,39 @@ import {
   Mail,
   X,
   ArrowRight,
-  CheckCircle2,
   AlertCircle,
   Eye,
   EyeOff,
-  Sparkles
+  Lock
 } from 'lucide-react';
-import { loginUser, switchTestAccount } from '../db/storage';
+import { loginUser } from '../db/storage';
 
 export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
   const [showKey, setShowKey] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const [adminEmail, setAdminEmail] = useState('admin@foodshare.org');
-  const [adminKey, setAdminKey] = useState('admin123');
+  const [adminEmail, setAdminEmail] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
 
   if (!isOpen) return null;
 
-  // 1-Click Demo Admin Login
-  const handleQuickAdminLogin = async () => {
-    try {
-      setLoading(true);
-      setErrorMsg('');
-      const user = await switchTestAccount('admin');
-      onLoginSuccess(user);
-      onClose();
-    } catch (err) {
-      setErrorMsg(err.message || 'Authentication error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Manual Credentials Submit
+  // Manual Credentials Submit via Firebase Authentication
   const handleManualLogin = async (e) => {
     e.preventDefault();
-    if (!adminEmail.trim() || !adminKey.trim()) return;
+    if (!adminEmail.trim() || !adminPassword.trim()) {
+      setErrorMsg('Please enter both your Firebase Auth email and password.');
+      return;
+    }
 
     try {
       setLoading(true);
       setErrorMsg('');
-      const user = await loginUser(adminEmail, adminKey);
-      if (user.role !== 'admin') {
-        throw new Error('This account does not have administrator privileges.');
-      }
+      const user = await loginUser(adminEmail, adminPassword);
       onLoginSuccess(user);
       onClose();
     } catch (err) {
-      setErrorMsg(err.message || 'Invalid administrator credentials');
+      setErrorMsg(err.message || 'Firebase Authentication failed. Please verify your credentials.');
     } finally {
       setLoading(false);
     }
@@ -64,52 +48,30 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
       <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden space-y-0 animate-in fade-in zoom-in-95">
 
         {/* Modal Top Banner */}
-        <div className="p-6 bg-slate-900 text-white flex items-center justify-between">
+        <div className="p-6 bg-emerald-950 text-white flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-400">
               <ShieldCheck size={22} />
             </div>
             <div>
               <h2 className="font-extrabold text-base text-white">Administrator Access Only</h2>
-              <p className="text-xs text-slate-400">Share The Bite Central Control Center</p>
+              <p className="text-xs text-emerald-300/80">Share The Bite Central Control Center</p>
             </div>
           </div>
           <button
             onClick={onClose}
             className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors focus:outline-none"
+            aria-label="Close Modal"
           >
             <X size={20} />
           </button>
         </div>
 
-        <div className="p-6 sm:p-8 space-y-6">
+        <div className="p-6 sm:p-8 space-y-5">
 
           {/* Explanation text */}
           <div className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-            <strong>Public Access Notice:</strong> Donors and shelters do not need an account to donate food or submit relief requests. Only authorized administrators sign in here to manage the logistics dispatch and database.
-          </div>
-
-          {/* 1-Click Fast Login Pill for Testing / Review */}
-          <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-emerald-900 flex items-center gap-1.5">
-                <Sparkles size={14} className="text-amber-500" />
-                Evaluation & Testing Shortcut:
-              </span>
-              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full uppercase">
-                Instant Access
-              </span>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleQuickAdminLogin}
-              disabled={loading}
-              className="w-full bg-emerald-800 hover:bg-emerald-700 active:bg-emerald-900 text-white font-bold text-xs py-3 px-4 rounded-xl transition-all shadow-xs flex items-center justify-center gap-2"
-            >
-              <ShieldCheck size={16} />
-              <span>1-Click Demo Admin Sign In</span>
-            </button>
+            <strong>Firebase Authentication:</strong> Enter the administrator credentials you created in your Firebase Console. Public donors and shelters do not need an account.
           </div>
 
           {/* Error Message */}
@@ -122,7 +84,7 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
 
           {/* Form */}
           <form onSubmit={handleManualLogin} className="space-y-4">
-            <div className="relative">
+            <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                 Admin Email ID
               </label>
@@ -133,30 +95,30 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
                   required
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
-                  placeholder="admin@foodshare.org"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none"
+                  placeholder="admin@yourdomain.com"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none text-slate-900"
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Admin Access Key
+                Admin Password
               </label>
               <div className="relative">
                 <Key size={16} className="absolute left-3.5 top-3 text-slate-400" />
                 <input
                   type={showKey ? 'text' : 'password'}
                   required
-                  value={adminKey}
-                  onChange={(e) => setAdminKey(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none font-mono"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  placeholder="Enter your Firebase password"
+                  className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none font-mono text-slate-900"
                 />
                 <button
                   type="button"
                   onClick={() => setShowKey(!showKey)}
-                  className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 p-1"
                 >
                   {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -167,10 +129,17 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 px-4 rounded-xl transition-all shadow-xs flex items-center justify-center gap-2"
+                className="w-full bg-emerald-800 hover:bg-emerald-700 active:bg-emerald-900 text-white font-bold text-xs py-3 px-4 rounded-xl transition-all shadow-xs flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                <span>Authorize with Firebase Auth</span>
-                <ArrowRight size={15} />
+                {loading ? (
+                  <span>Verifying with Firebase Auth...</span>
+                ) : (
+                  <>
+                    <Lock size={15} className="text-amber-400" />
+                    <span>Authorize with Firebase Auth</span>
+                    <ArrowRight size={15} />
+                  </>
+                )}
               </button>
             </div>
           </form>
@@ -178,7 +147,7 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
           {/* Security & Provider Disclosure */}
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
             <span className="font-semibold text-emerald-700">Firebase Authentication (firebase/auth)</span>
-            <span>Cloud Auth Active</span>
+            <span>Project: e-connect-sgs</span>
           </div>
 
         </div>
@@ -186,4 +155,3 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
     </div>
   );
 }
-

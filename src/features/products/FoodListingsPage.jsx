@@ -31,9 +31,6 @@ export default function FoodListingsPage({
       case 'admin':
         navigate('/admin');
         break;
-      case 'requests':
-        navigate('/requests');
-        break;
       case 'report':
         navigate('/report');
         break;
@@ -46,8 +43,6 @@ export default function FoodListingsPage({
     if (onApplyRequest) {
       await onApplyRequest(id, application);
     }
-    // Navigate to relief requests pipeline to view progress
-    navigate('/requests');
   };
 
   return (

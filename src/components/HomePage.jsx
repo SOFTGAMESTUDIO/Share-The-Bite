@@ -132,11 +132,11 @@ export default function HomePage({
 
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider">
-            <span>Storage Architecture</span>
+            <span>Cloud Architecture</span>
             <Database size={16} className="text-emerald-700" />
           </div>
-          <div className="text-lg font-extrabold text-emerald-900">IndexedDB + LS</div>
-          <p className="text-[11px] text-emerald-800 font-semibold">Dual engine real-time sync</p>
+          <div className="text-lg font-extrabold text-emerald-900">Cloud Firestore</div>
+          <p className="text-[11px] text-emerald-800 font-semibold">Firebase Cloud &amp; Offline Cache</p>
         </div>
       </section>
 
@@ -167,11 +167,31 @@ export default function HomePage({
 
         {/* Latest Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {latestDonations.map((donation) => {
-            const hoursLeft = calculateHoursLeft(donation.expiry);
-            const isAvailable = donation.status === 'Available';
+          {latestDonations.length === 0 ? (
+            <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-300 col-span-full max-w-xl mx-auto space-y-3">
+              <div className="w-14 h-14 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto">
+                <Package size={26} />
+              </div>
+              <h3 className="font-extrabold text-slate-900 text-base">No Food Listings Yet</h3>
+              <p className="text-slate-500 text-xs max-w-sm mx-auto">
+                Firebase Cloud Firestore is online. Restaurants, bakeries, and grocers can list surplus wholesome meals here without needing an account.
+              </p>
+              <div className="pt-2">
+                <button
+                  onClick={() => onNavigate('donor')}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-xs transition-colors inline-flex items-center gap-1.5"
+                >
+                  <HeartHandshake size={15} />
+                  <span>+ List First Donation</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            latestDonations.map((donation) => {
+              const hoursLeft = calculateHoursLeft(donation.expiry);
+              const isAvailable = donation.status === 'Available';
 
-            return (
+              return (
               <div
                 key={donation.id}
                 className="bg-white rounded-2xl border border-slate-200 shadow-xs hover:border-slate-300 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden"
@@ -274,8 +294,9 @@ export default function HomePage({
                 </div>
               </div>
             );
-          })}
-        </div>
+          })
+        )}
+      </div>
 
         <div className="text-center pt-2">
           <button

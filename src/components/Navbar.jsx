@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Leaf,
   Home,
@@ -11,29 +11,23 @@ import {
   X,
   Key,
   LogOut,
-  LayoutDashboard,
-  CheckCircle2,
-  Database,
-  Cloud
+  CheckCircle2
 } from 'lucide-react';
 
 export default function Navbar({
   availableCount = 0,
-  claimedCount = 0,
   isAdmin = false,
   currentUser = null,
   onLogout
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const navLinks = [
     { to: '/', label: 'Home', icon: Home, end: true },
     { to: '/products', label: 'Food Listings', icon: Package, badge: availableCount > 0 ? availableCount : null },
-    { to: '/requests', label: 'Relief Requests', icon: LayoutDashboard, badge: claimedCount > 0 ? claimedCount : null },
     { to: '/admin', label: 'Admin Console', icon: ShieldCheck, badge: 'PRO', isAdminItem: true },
-    { to: '/report', label: 'Project Report', icon: FileText },
+    { to: '/report', label: 'Report', icon: FileText },
     { to: '/evaluation', label: 'Evaluation', icon: CheckCircle2 }
   ];
 
@@ -43,37 +37,57 @@ export default function Navbar({
     setMobileMenuOpen(false);
   };
 
-  return (
-    <header className="bg-emerald-950 text-white shadow-lg sticky top-0 z-40 border-b border-emerald-800/80 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 gap-2">
+  const getUserInitials = () => {
+    if (!currentUser) return 'AD';
+    if (currentUser.displayName) {
+      return currentUser.displayName
+        .split(' ')
+        .map((p) => p[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+    }
+    if (currentUser.email) {
+      return currentUser.email.slice(0, 2).toUpperCase();
+    }
+    return 'AD';
+  };
 
-          {/* Logo & Brand: Share The Bite • UN SDG 2 */}
+  const getUserDisplayName = () => {
+    if (!currentUser) return 'Admin';
+    if (currentUser.displayName) return currentUser.displayName;
+    if (currentUser.email) return currentUser.email.split('@')[0];
+    return 'Admin';
+  };
+
+  return (
+    <header className="bg-emerald-950 text-white shadow-md sticky top-0 z-50 border-b border-emerald-800/80 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 gap-3">
+
+          {/* Left Brand: Share The Bite • Zero Hunger Initiative */}
           <NavLink
             to="/"
             onClick={() => setMobileMenuOpen(false)}
             className="flex items-center gap-2.5 cursor-pointer group select-none shrink-0"
           >
-            <div className="w-9 h-9 rounded-xl bg-emerald-900 border border-emerald-500/50 flex items-center justify-center text-emerald-300 group-hover:scale-105 transition-transform shadow-inner">
+            <div className="w-9 h-9 rounded-xl bg-emerald-900 border border-emerald-500/40 flex items-center justify-center text-emerald-300 group-hover:scale-105 transition-transform shadow-inner">
               <Leaf className="h-5 w-5" />
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-lg sm:text-xl tracking-tight text-white group-hover:text-emerald-200 transition-colors leading-none block">
+              <div className="flex items-center gap-1.5 leading-none">
+                <span className="font-black text-lg sm:text-xl tracking-tight text-white group-hover:text-emerald-200 transition-colors">
                   Share The Bite
-                </span>
-                <span className="hidden sm:inline-block text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-800 text-emerald-300 border border-emerald-600/50">
-                  Zero Hunger
                 </span>
               </div>
               <p className="text-[10px] text-emerald-300/80 font-medium tracking-wide leading-none mt-1">
-                UN SDG-2 &bull; Cloud Firestore & Offline DB
+                Zero Hunger Initiative
               </p>
             </div>
           </NavLink>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
             {navLinks.map((item) => {
               const Icon = item.icon;
               return (
@@ -82,11 +96,11 @@ export default function Navbar({
                   to={item.to}
                   end={item.end}
                   className={({ isActive }) =>
-                    `flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold tracking-wide transition-all ${
+                    `flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold tracking-normal transition-all whitespace-nowrap ${
                       isActive
                         ? item.isAdminItem
                           ? 'bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-xs'
-                          : 'bg-emerald-800 text-white border border-emerald-600/50 shadow-inner'
+                          : 'bg-emerald-800 text-white border border-emerald-600/40 shadow-inner'
                         : 'text-emerald-100/90 hover:text-white hover:bg-emerald-900/60'
                     }`
                   }
@@ -109,27 +123,17 @@ export default function Navbar({
             })}
           </nav>
 
-          {/* Right Controls: Engine Status + Donate CTA + Admin Auth */}
-          <div className="hidden sm:flex items-center gap-2 shrink-0">
+          {/* Right Controls: + Donate Food CTA & Firebase Auth Admin Pill */}
+          <div className="hidden sm:flex items-center gap-2.5 shrink-0">
             
-            {/* Triple-Engine Status Indicator */}
-            <div
-              className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-900/80 border border-emerald-700/60 text-[10px] font-bold text-emerald-200"
-              title="Real-time Triple-Engine Architecture: Firebase Cloud Firestore + IndexedDB + LocalStorage"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <Cloud size={11} className="text-emerald-300" />
-              <span>Cloud + IDB</span>
-            </div>
-
-            {/* Public Donor Form CTA - Anyone can donate without account */}
+            {/* Donate Food Button - Anyone can donate without account */}
             <NavLink
               to="/donate"
               className={({ isActive }) =>
-                `flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl transition-all shadow-sm ${
+                `flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl transition-all shadow-xs whitespace-nowrap ${
                   isActive
                     ? 'bg-emerald-500 text-emerald-950 ring-2 ring-emerald-300 font-extrabold'
-                    : 'bg-emerald-600 hover:bg-emerald-500 text-white hover:shadow-emerald-900/40'
+                    : 'bg-emerald-600 hover:bg-emerald-500 text-white'
                 }`
               }
               title="Anyone can donate surplus food without an account"
@@ -138,22 +142,22 @@ export default function Navbar({
               <span>+ Donate Food</span>
             </NavLink>
 
-            {/* Admin Profile or Login Gateway */}
+            {/* Admin Profile (if logged in via Firebase Auth) OR Admin Login button */}
             {isAdmin ? (
-              <div className="flex items-center gap-2 bg-emerald-900/90 border border-emerald-700/80 pl-2 pr-1.5 py-1 rounded-xl text-xs">
-                <div className="w-6 h-6 rounded-lg bg-emerald-700 border border-emerald-500/60 flex items-center justify-center text-[10px] font-black text-amber-300">
-                  SJ
+              <div className="flex items-center gap-2 bg-emerald-900/90 border border-emerald-700/80 pl-2 pr-1.5 py-1 rounded-xl text-xs shadow-xs">
+                <div className="w-6 h-6 rounded-lg bg-emerald-700 border border-emerald-500/50 flex items-center justify-center text-[10px] font-black text-amber-300">
+                  {getUserInitials()}
                 </div>
-                <div className="flex items-center gap-1 text-slate-200 text-[11px] font-bold">
-                  <span className="hidden md:inline">Sarah Jenkins</span>
-                  <span className="bg-amber-400 text-amber-950 text-[9px] px-1.5 py-0.5 rounded font-extrabold">
+                <div className="flex items-center gap-1.5 text-slate-200 text-xs font-bold max-w-[120px] truncate">
+                  <span className="truncate">{getUserDisplayName()}</span>
+                  <span className="bg-amber-400 text-amber-950 text-[9px] px-1.5 py-0.5 rounded font-black shrink-0">
                     ADMIN
                   </span>
                 </div>
                 <button
                   onClick={handleLogoutClick}
-                  className="bg-emerald-950/80 hover:bg-rose-900/80 text-slate-300 hover:text-rose-200 p-1 rounded-lg transition-colors ml-1"
-                  title="Sign Out of Administrator Session"
+                  className="bg-emerald-950 hover:bg-rose-900/80 text-slate-300 hover:text-rose-200 p-1.5 rounded-lg transition-colors ml-0.5"
+                  title="Sign Out of Firebase Auth Session"
                 >
                   <LogOut size={13} />
                 </button>
@@ -162,13 +166,13 @@ export default function Navbar({
               <NavLink
                 to="/login"
                 className={({ isActive }) =>
-                  `flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-xs border ${
+                  `flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-xs border whitespace-nowrap ${
                     isActive
                       ? 'bg-amber-500/20 text-amber-300 border-amber-400/50'
                       : 'bg-emerald-900/80 hover:bg-emerald-850 border-emerald-700/70 text-emerald-100 hover:text-white'
                   }`
                 }
-                title="Single Administrator Login (Firebase Auth)"
+                title="Sign in with your Firebase Authentication account"
               >
                 <Key size={14} className="text-amber-400" />
                 <span>Admin Login</span>
@@ -177,8 +181,8 @@ export default function Navbar({
 
           </div>
 
-          {/* Mobile Menu Hamburger Button */}
-          <div className="flex lg:hidden items-center gap-1.5">
+          {/* Mobile Actions: Donate Button & Hamburger Toggle */}
+          <div className="flex md:hidden items-center gap-1.5">
             <NavLink
               to="/donate"
               className="sm:hidden bg-emerald-600 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1"
@@ -199,9 +203,9 @@ export default function Navbar({
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-emerald-950 border-b border-emerald-800 p-4 space-y-1.5 animate-in slide-in-from-top-2">
+        <div className="md:hidden bg-emerald-950 border-b border-emerald-800 p-4 space-y-1.5 animate-in slide-in-from-top-2">
           {navLinks.map((item) => {
             const Icon = item.icon;
             return (
@@ -249,7 +253,7 @@ export default function Navbar({
                 className="w-full bg-rose-900/40 border border-rose-700/60 text-rose-200 font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-2"
               >
                 <LogOut size={14} />
-                <span>Sign Out of Administrator Session</span>
+                <span>Sign Out ({getUserDisplayName()})</span>
               </button>
             ) : (
               <NavLink

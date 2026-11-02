@@ -527,7 +527,7 @@ export default function AdminPanel({
     }
   };
 
-  // Security Gate: Non-admin protection with 1-click bypass for evaluation/testing
+  // Security Gate: Non-admin protection
   const isAdmin = currentUser && currentUser.role === 'admin';
 
   if (!isAdmin) {
@@ -539,45 +539,31 @@ export default function AdminPanel({
           </div>
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100/80 border border-amber-300/60 px-3 py-1 rounded-full">
-              Admin Login Required
+              Admin Authentication Required
             </span>
             <h2 className="text-2xl font-bold text-slate-900 mt-3 tracking-tight">Administrator Access Only</h2>
             <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto leading-relaxed">
-              The Admin Control Center is restricted to authorized operators to review two-sided request dossiers, manage logistics dispatches, and configure storage.
+              The Admin Control Center is restricted to authorized operators to manage requests, dispatch deliveries, and configure logistics.
             </p>
           </div>
 
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-left space-y-2">
             <div className="font-bold text-slate-800 flex items-center gap-1.5">
-              <Key size={14} className="text-emerald-700" />
-              <span>Standard Admin Credentials (Firebase Authentication):</span>
+              <ShieldCheck size={15} className="text-emerald-700" />
+              <span>Firebase Authentication Protected:</span>
             </div>
-            <div className="grid sm:grid-cols-2 gap-2 pt-1 font-mono text-[11px] text-slate-700">
-              <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                <span className="text-slate-400 block text-[10px]">Email ID:</span>
-                <strong>admin@foodshare.org</strong>
-              </div>
-              <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                <span className="text-slate-400 block text-[10px]">Access Key:</span>
-                <strong>admin123</strong>
-              </div>
-            </div>
+            <p className="text-slate-600 leading-relaxed">
+              Please sign in using the administrator email and password you manually created in your Firebase Console under Authentication.
+            </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <button
-              onClick={() => onSwitchUser && onSwitchUser('admin')}
-              className="w-full sm:w-auto bg-emerald-800 hover:bg-emerald-700 active:bg-emerald-900 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
-            >
-              <ShieldCheck size={16} />
-              <span>1-Click Sign In as Administrator</span>
-            </button>
+          <div className="pt-2">
             <button
               onClick={onOpenLogin}
-              className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 border border-slate-300"
+              className="w-full sm:w-auto bg-emerald-800 hover:bg-emerald-700 active:bg-emerald-900 text-white font-bold text-xs px-8 py-3.5 rounded-xl transition-all shadow-md inline-flex items-center justify-center gap-2"
             >
               <Key size={16} />
-              <span>Enter Admin Key</span>
+              <span>Sign In with Firebase Auth</span>
             </button>
           </div>
         </div>
@@ -632,21 +618,12 @@ export default function AdminPanel({
             }`}
         >
           <ClipboardList size={15} />
-          <span>Service Requests & Logistics ({serviceRequests.length})</span>
+          <span>Service Requests &amp; Logistics ({serviceRequests.length})</span>
           {requested > 0 && (
             <span className="bg-amber-400 text-slate-950 font-black px-1.5 py-0.2 rounded-full text-[10px]">
               {requested} new
             </span>
           )}
-        </button>
-
-        <button
-          onClick={() => setAdminTab('overview')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all whitespace-nowrap ${adminTab === 'overview' ? 'bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
-            }`}
-        >
-          <Layers size={15} />
-          <span>System Overview</span>
         </button>
 
         <button
@@ -659,12 +636,12 @@ export default function AdminPanel({
         </button>
 
         <button
-          onClick={() => setAdminTab('users')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all whitespace-nowrap ${adminTab === 'users' ? 'bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
+          onClick={() => setAdminTab('overview')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all whitespace-nowrap ${adminTab === 'overview' ? 'bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
             }`}
         >
-          <Users size={15} />
-          <span>IndexedDB Users & Keys ({usersList.length})</span>
+          <Layers size={15} />
+          <span>System Overview</span>
         </button>
 
         <button
@@ -673,16 +650,7 @@ export default function AdminPanel({
             }`}
         >
           <Database size={15} />
-          <span>Database & Backup Hub</span>
-        </button>
-
-        <button
-          onClick={() => setAdminTab('audit')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all whitespace-nowrap ${adminTab === 'audit' ? 'bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
-            }`}
-        >
-          <Activity size={15} />
-          <span>Audit Logs ({auditLogs.length})</span>
+          <span>Cloud Firestore &amp; Backup</span>
         </button>
       </div>
 
@@ -1391,9 +1359,9 @@ export default function AdminPanel({
         <div className="space-y-6">
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-6">
             <div>
-              <h2 className="text-xl font-extrabold text-slate-900">IndexedDB & LocalStorage Engine Center</h2>
+              <h2 className="text-xl font-extrabold text-slate-900">Firebase Cloud Firestore Hub</h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Full programmatic control over the browser-native database and backup files.
+                Full programmatic control over the live Firebase Cloud Firestore collections (Project: e-connect-sgs).
               </p>
             </div>
 
@@ -1403,10 +1371,10 @@ export default function AdminPanel({
               <div className="border border-rose-200 bg-rose-50/40 rounded-2xl p-6 space-y-3">
                 <div className="flex items-center gap-2 text-rose-800 font-bold text-base">
                   <Trash2 size={18} className="text-rose-600" />
-                  Clear All Database Records
+                  Clear All Firestore Records
                 </div>
                 <p className="text-xs text-rose-950/80 leading-relaxed">
-                  Permanently deletes all food donation entries from the IndexedDB `donations` store and LocalStorage backup cache.
+                  Permanently deletes all food donation entries from the Firebase Cloud Firestore `donations` collection.
                 </p>
                 <div className="pt-2">
                   <button
@@ -1414,25 +1382,6 @@ export default function AdminPanel({
                     className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-xs transition-all"
                   >
                     Clear All Donations ({total})
-                  </button>
-                </div>
-              </div>
-
-              {/* Card 2: Restore Default Mock Data */}
-              <div className="border border-emerald-200 bg-emerald-50/40 rounded-2xl p-6 space-y-3">
-                <div className="flex items-center gap-2 text-emerald-800 font-bold text-base">
-                  <RotateCcw size={18} className="text-emerald-700" />
-                  Restore Demo Mock Dataset
-                </div>
-                <p className="text-xs text-emerald-950/80 leading-relaxed">
-                  Populates IndexedDB and LocalStorage with the default verified SDG 2 Zero Hunger food listings and sample active requests.
-                </p>
-                <div className="pt-2">
-                  <button
-                    onClick={() => setConfirmResetOpen(true)}
-                    className="bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-xs transition-all"
-                  >
-                    Restore Demo Seed Data
                   </button>
                 </div>
               </div>

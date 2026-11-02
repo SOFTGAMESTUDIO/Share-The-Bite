@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, HeartHandshake, ShieldCheck, Database, Cloud, ExternalLink } from 'lucide-react';
+import { Leaf, Cloud, ExternalLink } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -26,11 +26,7 @@ export default function Footer() {
             <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-emerald-300">
               <span className="flex items-center gap-1 bg-emerald-900/60 px-2.5 py-1 rounded-lg border border-emerald-800">
                 <Cloud size={12} className="text-emerald-400" />
-                Firebase Cloud Firestore
-              </span>
-              <span className="flex items-center gap-1 bg-emerald-900/60 px-2.5 py-1 rounded-lg border border-emerald-800">
-                <Database size={12} className="text-emerald-400" />
-                IndexedDB & LocalStorage
+                Firebase Cloud Firestore (Project: e-connect-sgs)
               </span>
             </div>
           </div>
@@ -43,13 +39,10 @@ export default function Footer() {
                 <Link to="/" className="text-emerald-200/80 hover:text-white transition-colors">Home Platform</Link>
               </li>
               <li>
-                <Link to="/products" className="text-emerald-200/80 hover:text-white transition-colors">All Food Listings</Link>
+                <Link to="/products" className="text-emerald-200/80 hover:text-white transition-colors">Food Listings</Link>
               </li>
               <li>
                 <Link to="/donate" className="text-emerald-200/80 hover:text-white transition-colors">+ Donate Surplus (No Account)</Link>
-              </li>
-              <li>
-                <Link to="/requests" className="text-emerald-200/80 hover:text-white transition-colors">Relief Distribution Pipeline</Link>
               </li>
               <li>
                 <Link to="/admin" className="text-emerald-200/80 hover:text-white transition-colors">Admin Console (PRO)</Link>
@@ -57,7 +50,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Platform & Impact */}
+          {/* Documentation & Impact */}
           <div>
             <h3 className="text-xs font-black uppercase tracking-wider text-emerald-400 mb-3">Documentation</h3>
             <ul className="space-y-2 text-xs">
@@ -88,10 +81,10 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 mt-8 border-t border-emerald-900/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-emerald-400/80">
-          <p>&copy; {new Date().getFullYear()} Share The Bite &bull; Built with React 19, React Router DOM &amp; Firebase modular v13.</p>
+          <p>&copy; {new Date().getFullYear()} Share The Bite &bull; Built with React &amp; Firebase Cloud Platform.</p>
           <p className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Triple-Engine Storage Online (Firestore + IndexedDB + LocalStorage)</span>
+            <span>Firebase Cloud Firestore &amp; Auth Online</span>
           </p>
         </div>
       </div>

@@ -8,7 +8,6 @@ import {
   updateDonationStatus,
   getCurrentUser,
   logoutUser,
-  switchTestAccount,
   subscribeToDonations,
   subscribeToAuthChanges
 } from './db/storage';
@@ -19,11 +18,10 @@ import Footer from './components/Footer';
 import Toast from './components/Toast';
 import AdminLoginModal from './components/AdminLoginModal';
 
-// Feature Pages (Feature-Based Architecture)
+// Feature Pages
 import HomePage from './features/home/HomePage';
 import FoodListingsPage from './features/products/FoodListingsPage';
 import DonatePage from './features/donate/DonatePage';
-import ReliefRequestsPage from './features/requests/ReliefRequestsPage';
 import AdminPage from './features/admin/AdminPage';
 import LoginPage from './features/auth/LoginPage';
 import ProjectReportPage from './features/report/ProjectReportPage';
@@ -41,7 +39,6 @@ export default function App() {
     const id = 'toast_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
     setToasts((prev) => [...prev, { id, type, title, message }]);
 
-    // Auto dismiss after 4.5 seconds
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 4500);
@@ -51,7 +48,7 @@ export default function App() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  // Reload donations from Triple-Engine (Cloud Firestore + IndexedDB + LocalStorage)
+  // Reload donations from Cloud Firestore
   const loadDonations = useCallback(async () => {
     try {
       const items = await getAllDonations();
@@ -61,7 +58,7 @@ export default function App() {
     }
   }, []);
 
-  // Initialize DB on mount
+  // Initialize Cloud Firestore connection on mount
   useEffect(() => {
     async function boot() {
       try {
@@ -84,7 +81,7 @@ export default function App() {
   // Real-time Cloud Firestore & Firebase Auth Subscribers
   useEffect(() => {
     const unsubDonations = subscribeToDonations((updatedList) => {
-      if (Array.isArray(updatedList) && updatedList.length > 0) {
+      if (Array.isArray(updatedList)) {
         setDonations(updatedList);
       }
     });
@@ -92,6 +89,8 @@ export default function App() {
     const unsubAuth = subscribeToAuthChanges((authMember) => {
       if (authMember && authMember.role === 'admin') {
         setCurrentUser(authMember);
+      } else {
+        setCurrentUser(null);
       }
     });
 
@@ -107,7 +106,7 @@ export default function App() {
     showToast({
       type: 'success',
       title: 'Administrator Authenticated',
-      message: `Welcome, ${user.name}! Firebase Cloud Control Center unlocked.`
+      message: `Welcome, ${user.name || user.email}! Firebase Cloud Control Center unlocked.`
     });
   };
 
@@ -118,30 +117,11 @@ export default function App() {
     showToast({
       type: 'info',
       title: 'Signed Out',
-      message: 'Administrator session cleared from Firebase Auth & local stores.'
+      message: 'Signed out of Firebase Authentication.'
     });
   };
 
-  // Handler: 1-Click Fast Switch to Administrator
-  const handleQuickSwitch = async (roleOrEmail = 'admin') => {
-    try {
-      const user = await switchTestAccount(roleOrEmail);
-      setCurrentUser(user);
-      showToast({
-        type: 'success',
-        title: `Administrator Active: ${user.name}`,
-        message: 'Admin credentials verified from Firebase Auth / IndexedDB.'
-      });
-    } catch (err) {
-      showToast({
-        type: 'error',
-        title: 'Authentication Failed',
-        message: err.message
-      });
-    }
-  };
-
-  // Handler: Add New Donation (Anyone can donate without account)
+  // Handler: Add New Donation (Public: Anyone can donate without account)
   const handleAddDonation = async (formData) => {
     try {
       const created = await addDonation(formData);
@@ -149,7 +129,7 @@ export default function App() {
       showToast({
         type: 'success',
         title: 'Donation Listed Successfully!',
-        message: `"${created.item}" saved to Firebase Cloud Firestore & local cache.`
+        message: `"${created.item}" saved to Firebase Cloud Firestore.`
       });
     } catch (err) {
       showToast({
@@ -169,7 +149,7 @@ export default function App() {
       showToast({
         type: 'success',
         title: 'Relief Request Submitted!',
-        message: `Application from "${application.receiverName}" for ${application.beneficiaryCount || 20} beneficiaries sent to Admin for dispatch.`
+        message: `Request for "${updated.item}" submitted. Administrator will review and dispatch.`
       });
     } catch (err) {
       showToast({
@@ -181,26 +161,7 @@ export default function App() {
     }
   };
 
-  // Handler: Receiver / Admin Status Update Pipeline (Pickup, Delivery, Acceptance)
-  const handleUpdateStatus = async (id, newStatus) => {
-    try {
-      await updateDonationStatus(id, newStatus, currentUser?.name || 'Relief Dispatch Team');
-      await loadDonations();
-      showToast({
-        type: 'info',
-        title: 'Status Updated',
-        message: `Donation #${id} is now "${newStatus}".`
-      });
-    } catch (err) {
-      showToast({
-        type: 'error',
-        title: 'Update Failed',
-        message: err.message
-      });
-    }
-  };
-
-  // Calculate live counts & statistics (with defensive safeguards)
+  // Calculate live counts & statistics
   const safeDonations = Array.isArray(donations) ? donations : [];
   const availableCount = safeDonations.filter((d) => d.status === 'Available').length;
   const claimedCount = safeDonations.filter((d) => d.status !== 'Available').length;
@@ -222,7 +183,6 @@ export default function App() {
         {/* Global Responsive Navigation Bar */}
         <Navbar
           availableCount={availableCount}
-          claimedCount={claimedCount}
           isAdmin={isAdmin}
           currentUser={currentUser}
           onLogout={handleLogout}
@@ -234,7 +194,7 @@ export default function App() {
             <div className="flex flex-col items-center justify-center py-28 text-emerald-800 space-y-3">
               <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
               <p className="font-bold text-sm tracking-wide">
-                Connecting to Firebase Cloud Firestore &amp; Offline IndexedDB Engine...
+                Connecting to Firebase Cloud Firestore...
               </p>
             </div>
           ) : (
@@ -277,21 +237,7 @@ export default function App() {
               />
               <Route path="/donor" element={<Navigate to="/donate" replace />} />
 
-              {/* 4th: Relief Requests & Logistics Delivery Pipeline */}
-              <Route
-                path="/requests"
-                element={
-                  <ReliefRequestsPage
-                    donations={donations}
-                    onUpdateStatus={handleUpdateStatus}
-                    currentUser={currentUser}
-                  />
-                }
-              />
-              <Route path="/relief" element={<Navigate to="/requests" replace />} />
-              <Route path="/ngo" element={<Navigate to="/requests" replace />} />
-
-              {/* 5th: Central Admin Control Console */}
+              {/* 4th: Central Admin Control Console */}
               <Route
                 path="/admin"
                 element={
@@ -300,7 +246,6 @@ export default function App() {
                     onRefreshData={loadDonations}
                     showToast={showToast}
                     currentUser={currentUser}
-                    onSwitchUser={handleQuickSwitch}
                     onOpenLogin={() => setAdminLoginModalOpen(true)}
                   />
                 }
