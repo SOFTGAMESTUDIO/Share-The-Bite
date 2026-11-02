@@ -1,8 +1,28 @@
 // ============================================================================
 // Share The Bite SDG-2 PLATFORM: PERSISTENT STORAGE & AUTHENTICATION LAYER
-// Dual-Engine: IndexedDB (Primary) + LocalStorage (Real-time Mirror / Fallback)
-// Includes Transactional Users & Session Stores for Role-Based Test Access
+// Triple-Engine: Firebase Cloud Firestore + IndexedDB + LocalStorage (Real-time Mirror)
+// Project: e-connect-sgs | Cloud Auth, Firestore Database, and Offline Resilience
 // ============================================================================
+
+import { db, auth, rtdb, storage, firebaseConfig } from './firebase';
+import {
+  collection,
+  doc,
+  getDocs,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+  writeBatch
+} from 'firebase/firestore';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updateProfile
+} from 'firebase/auth';
 
 const DB_NAME = 'Share The BiteAppDB';
 const DB_VERSION = 2;
@@ -18,7 +38,6 @@ const LS_KEY_SETTINGS = 'Share The Bite_settings_backup';
 const LS_KEY_USERS = 'Share The Bite_users_backup';
 const LS_KEY_SESSION = 'Share The Bite_active_session';
 
-// Pre-configured Test Accounts stored in IndexedDB (for demo & testing)
 export const initialTestUsers = [
   {
     id: 'usr_admin_01',
@@ -91,7 +110,7 @@ export const initialMockDonations = [
     expiry: new Date(Date.now() + 24 * 3600 * 1000).toISOString().slice(0, 16),
     status: "Available",
     dietary: "Vegetarian and Halal Options",
-    notes: "Packed in sanitized insulated catering containers. Chilled at 4°C.",
+    notes: "Packed in sanitized insulated catering containers. Chilled at 4┬░C.",
     urgency: "medium",
     createdAt: new Date(Date.now() - 3600 * 1000 * 3).toISOString()
   },
@@ -209,7 +228,7 @@ export const initialMockDonations = [
     receiverPhone: "+1 (555) 345-1234",
     receiverEmail: "pantry@stjude.org",
     dietary: "Gluten-Free Vegetarian",
-    notes: "Refrigerated transport required. Temperature strictly 2-4°C.",
+    notes: "Refrigerated transport required. Temperature strictly 2-4┬░C.",
     urgency: "medium",
     driver: "David Kim (Volunteer Driver, Green Van 02)",
     receiverApplication: {
@@ -307,7 +326,7 @@ export const initialMockDonations = [
     receiverPhone: "+1 (555) 777-6543",
     receiverEmail: "intake@newhopeshelter.org",
     dietary: "100% Organic Vegan / Raw",
-    notes: "Harvested this morning. Crisp and refrigerated at 5°C.",
+    notes: "Harvested this morning. Crisp and refrigerated at 5┬░C.",
     urgency: "medium",
     receiverApplication: {
       receiverName: "New Hope Women's Shelter",
@@ -380,7 +399,7 @@ export const initialMockDonations = [
     receiverPhone: "+1 (555) 666-3311",
     receiverEmail: "kitchen@graceseniors.org",
     dietary: "Vegetarian / High-Calcium",
-    notes: "Keep chilled at 2-6°C. Insulated thermal blankets used during transit.",
+    notes: "Keep chilled at 2-6┬░C. Insulated thermal blankets used during transit.",
     urgency: "medium",
     driver: "Officer Ray Reynolds (Transit Logistics Van #1)",
     receiverApplication: {
@@ -669,7 +688,7 @@ export const initialMockDonations = [
     receiverPhone: "+1 (555) 777-3344",
     receiverEmail: "kitchen@mercymeal.org",
     dietary: "Vegetarian / Protein-Rich",
-    notes: "Cartoned Grade-AA eggs and salted butter bricks. Maintained at 4°C in transit.",
+    notes: "Cartoned Grade-AA eggs and salted butter bricks. Maintained at 4┬░C in transit.",
     urgency: "low",
     receiverApplication: {
       receiverName: "Mercy Meal Kitchen",
@@ -688,7 +707,7 @@ export const initialMockDonations = [
     acceptedAt: new Date(Date.now() - 3600 * 1000 * 11).toISOString(),
     pickedUpAt: new Date(Date.now() - 3600 * 1000 * 7).toISOString(),
     deliveredAt: new Date(Date.now() - 3600 * 1000 * 3).toISOString(),
-    deliveryProof: "Delivered and inspected. Temperature 3.8°C verified. Stored in walk-in cooler. Signed: Sister Teresa.",
+    deliveryProof: "Delivered and inspected. Temperature 3.8┬░C verified. Stored in walk-in cooler. Signed: Sister Teresa.",
     createdAt: new Date(Date.now() - 3600 * 1000 * 18).toISOString()
   },
   {
@@ -711,6 +730,7 @@ export const initialMockDonations = [
     createdAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString()
   }
 ];
+
 
 // ----------------------------------------------------------------------------
 // IndexedDB Engine Helpers
@@ -819,12 +839,20 @@ export async function logActivity(action, details, actor = 'System') {
 
   // 2. Persist to IndexedDB
   try {
-    const db = await openDB();
-    const tx = db.transaction(STORE_LOGS, 'readwrite');
+    const idb = await openDB();
+    const tx = idb.transaction(STORE_LOGS, 'readwrite');
     const store = tx.objectStore(STORE_LOGS);
     store.put(logEntry);
   } catch (err) {
     // Graceful fallback in LocalStorage
+  }
+
+  // 3. Persist to Firebase Cloud Firestore
+  try {
+    const docRef = doc(db, 'audit_logs', logEntry.id);
+    await setDoc(docRef, logEntry);
+  } catch (cloudErr) {
+    // Graceful offline fallback
   }
 
   return logEntry;
@@ -939,48 +967,99 @@ export async function getAllUsers() {
 }
 
 export async function loginUser(email, key) {
-  const users = await getAllUsers();
   const cleanEmail = email.trim().toLowerCase();
-  let found = users.find(u => u.email.toLowerCase() === cleanEmail);
+  const cleanKey = key.trim();
 
-  // Fallback for admin email variations
-  if (!found && (cleanEmail === 'admin@foodshare.org' || cleanEmail === 'admin@sharethebite.org' || cleanEmail === 'admin@share the bite.org')) {
-    found = users.find(u => u.role === 'admin');
+  let authenticatedUser = null;
+
+  // 1. Attempt Cloud Authentication via Firebase Auth
+  try {
+    let userCredential = null;
+    try {
+      userCredential = await signInWithEmailAndPassword(auth, cleanEmail, cleanKey);
+    } catch (authErr) {
+      // If user does not exist in Firebase Auth yet, auto-provision test admin account
+      if (
+        authErr.code === 'auth/user-not-found' ||
+        authErr.code === 'auth/invalid-credential' ||
+        authErr.code === 'auth/invalid-login-credentials' ||
+        authErr.code === 'auth/invalid-email'
+      ) {
+        userCredential = await createUserWithEmailAndPassword(auth, cleanEmail, cleanKey);
+        await updateProfile(userCredential.user, {
+          displayName: cleanEmail.includes('admin') ? 'Sarah Jenkins (Admin)' : 'Verified Member'
+        });
+      } else {
+        throw authErr;
+      }
+    }
+
+    if (userCredential && userCredential.user) {
+      const fbUser = userCredential.user;
+      const isAdmin = cleanEmail.includes('admin') || cleanEmail === 'admin@foodshare.org';
+      authenticatedUser = {
+        id: fbUser.uid,
+        name: fbUser.displayName || (isAdmin ? 'Sarah Jenkins' : 'Relief Partner'),
+        email: fbUser.email,
+        role: isAdmin ? 'admin' : 'donor',
+        organization: isAdmin ? 'Share The Bite Platform Oversight' : 'Community Partner',
+        phone: '+1 (555) 100-2000',
+        title: isAdmin ? 'Platform Administrator' : 'Member',
+        badge: isAdmin ? 'Administrator' : 'Verified Member',
+        provider: 'firebase_auth',
+        createdAt: new Date().toISOString()
+      };
+
+      // Save/update user profile in Cloud Firestore 'users' collection
+      try {
+        await setDoc(doc(db, 'users', fbUser.uid), authenticatedUser, { merge: true });
+      } catch (e) {}
+    }
+  } catch (firebaseAuthErr) {
+    console.warn('Firebase Auth cloud login fallback to local credentials:', firebaseAuthErr);
+
+    // Fallback: Verify against test accounts in IndexedDB / LocalStorage
+    const users = await getAllUsers();
+    let found = users.find(u => u.email.toLowerCase() === cleanEmail);
+
+    if (!found && (cleanEmail === 'admin@foodshare.org' || cleanEmail === 'admin@sharethebite.org' || cleanEmail === 'admin@share the bite.org')) {
+      found = users.find(u => u.role === 'admin');
+    }
+
+    if (!found) {
+      throw new Error(firebaseAuthErr.message || 'No registered account found with this email address.');
+    }
+
+    if (found.key !== cleanKey) {
+      throw new Error('Invalid access key or password for this account.');
+    }
+
+    authenticatedUser = found;
   }
 
-  if (!found) {
-    throw new Error('No registered account found with this email address.');
-  }
-
-  if (found.key !== key.trim()) {
-    throw new Error('Invalid access key or password for this account.');
-  }
-
-  // Create session
+  // Create session in LocalStorage & IndexedDB
   const session = {
     id: 'session_active',
-    user: found,
-    token: 'token_' + Date.now(),
+    user: authenticatedUser,
+    token: 'token_fb_' + Date.now(),
     loginTime: new Date().toISOString()
   };
 
   writeLocalStorage(LS_KEY_SESSION, session);
 
   try {
-    const db = await openDB();
-    const tx = db.transaction(STORE_SESSIONS, 'readwrite');
+    const dbLocal = await openDB();
+    const tx = dbLocal.transaction(STORE_SESSIONS, 'readwrite');
     tx.objectStore(STORE_SESSIONS).put(session);
-  } catch (e) {
-    // LocalStorage already saved
-  }
+  } catch (e) {}
 
   await logActivity(
     'USER_LOGIN',
-    `Authenticated user "${found.name}" with role "${found.role}".`,
-    found.name
+    `Authenticated user "${authenticatedUser.name}" (${authenticatedUser.email}) via Firebase Auth.`,
+    authenticatedUser.name
   );
 
-  return session.user;
+  return authenticatedUser;
 }
 
 export async function registerUser(userData) {
@@ -1047,17 +1126,25 @@ export async function logoutUser() {
   const activeSession = readLocalStorage(LS_KEY_SESSION, null);
   const userName = activeSession?.user?.name || 'User';
 
+  // 1. Sign out of Firebase Auth
+  try {
+    await signOut(auth);
+  } catch (e) {
+    console.warn('Firebase Auth sign out fallback:', e);
+  }
+
+  // 2. Clear local session
   writeLocalStorage(LS_KEY_SESSION, null);
 
   try {
-    const db = await openDB();
-    const tx = db.transaction(STORE_SESSIONS, 'readwrite');
+    const dbLocal = await openDB();
+    const tx = dbLocal.transaction(STORE_SESSIONS, 'readwrite');
     tx.objectStore(STORE_SESSIONS).clear();
   } catch (e) {
     // Ignore
   }
 
-  await logActivity('USER_LOGOUT', `User "${userName}" logged out.`, userName);
+  await logActivity('USER_LOGOUT', `User "${userName}" logged out of Firebase Auth session.`, userName);
   return true;
 }
 
@@ -1066,118 +1153,186 @@ export function getCurrentUser() {
   return active ? active.user : null;
 }
 
-export async function switchTestAccount(roleOrEmail) {
+export async function switchTestAccount(roleOrEmail = 'admin') {
+  if (roleOrEmail === 'admin' || roleOrEmail === 'admin@foodshare.org') {
+    return loginUser('admin@foodshare.org', 'admin123');
+  }
   const users = await getAllUsers();
-  let match = users.find(u => u.email.toLowerCase() === roleOrEmail.toLowerCase());
-  if (!match) {
-    match = users.find(u => u.role === roleOrEmail);
-  }
-  if (!match) {
-    match = users[0];
-  }
-
-  const session = {
-    id: 'session_active',
-    user: match,
-    token: 'token_' + Date.now(),
-    loginTime: new Date().toISOString()
-  };
-
-  writeLocalStorage(LS_KEY_SESSION, session);
-
-  try {
-    const db = await openDB();
-    const tx = db.transaction(STORE_SESSIONS, 'readwrite');
-    tx.objectStore(STORE_SESSIONS).put(session);
-  } catch (e) {
-    // Ignored
-  }
-
-  await logActivity(
-    'TEST_ACCOUNT_SWITCHED',
-    `Switched test session to "${match.name}" (${match.role}).`,
-    match.name
-  );
-
-  return match;
+  let match = users.find(u => u.email.toLowerCase() === roleOrEmail.toLowerCase() || u.role === roleOrEmail) || users[0];
+  return loginUser(match.email, match.key || 'admin123');
 }
 
 // ----------------------------------------------------------------------------
-// Core Storage Initialization & Sync
+// Real-time Cloud Firestore Subscribers & Sync Engine
+// ----------------------------------------------------------------------------
+let donationSubscribers = [];
+
+export function subscribeToDonations(callback) {
+  donationSubscribers.push(callback);
+  return () => {
+    donationSubscribers = donationSubscribers.filter(cb => cb !== callback);
+  };
+}
+
+function notifyDonationSubscribers(items) {
+  donationSubscribers.forEach(cb => {
+    try { cb(items); } catch (e) {}
+  });
+}
+
+let firestoreUnsubscribe = null;
+function setupFirestoreRealtimeListener() {
+  if (firestoreUnsubscribe) return;
+  try {
+    const q = collection(db, 'donations');
+    firestoreUnsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const cloudItems = [];
+        snapshot.forEach(docSnap => cloudItems.push(docSnap.data()));
+        cloudItems.sort((a, b) => (b.id || 0) - (a.id || 0));
+        writeLocalStorage(LS_KEY_DONATIONS, cloudItems);
+        notifyDonationSubscribers(cloudItems);
+      }
+    }, (err) => {
+      console.warn('Firestore real-time listener notice:', err);
+    });
+  } catch (e) {}
+}
+
+export function subscribeToAuthChanges(callback) {
+  return onAuthStateChanged(auth, async (firebaseUser) => {
+    if (firebaseUser) {
+      const activeSession = readLocalStorage(LS_KEY_SESSION, null);
+      if (activeSession && activeSession.user) {
+        callback(activeSession.user);
+      } else {
+        const isAdmin = firebaseUser.email?.includes('admin') || firebaseUser.email === 'admin@foodshare.org';
+        const userObj = {
+          id: firebaseUser.uid,
+          name: firebaseUser.displayName || (isAdmin ? 'Sarah Jenkins' : 'Relief Partner'),
+          email: firebaseUser.email,
+          role: isAdmin ? 'admin' : 'donor',
+          organization: isAdmin ? 'Share The Bite Platform Oversight' : 'Community Partner',
+          badge: isAdmin ? 'Administrator' : 'Member',
+          provider: 'firebase_auth'
+        };
+        callback(userObj);
+      }
+    } else {
+      callback(null);
+    }
+  });
+}
+
+// ----------------------------------------------------------------------------
+// Core Storage Initialization & Sync (Firebase Cloud Firestore + IndexedDB)
 // ----------------------------------------------------------------------------
 export async function initializeStorage() {
   let donations = [];
 
-  // Check if we can open IndexedDB
+  // 1. Instant local fast cache from IndexedDB / LocalStorage first (0ms latency)
   try {
-    const db = await openDB();
+    const idb = await openDB();
     donations = await new Promise((resolve) => {
-      const tx = db.transaction(STORE_DONATIONS, 'readonly');
+      const tx = idb.transaction(STORE_DONATIONS, 'readonly');
       const store = tx.objectStore(STORE_DONATIONS);
       const req = store.getAll();
       req.onsuccess = () => resolve(req.result || []);
       req.onerror = () => resolve([]);
     });
 
-    if (donations.length === 0) {
-      // Check if LocalStorage has backup
-      const lsBackup = readLocalStorage(LS_KEY_DONATIONS, null);
-      if (lsBackup && Array.isArray(lsBackup) && lsBackup.length >= 20) {
-        donations = lsBackup;
-        const writeTx = db.transaction(STORE_DONATIONS, 'readwrite');
-        const writeStore = writeTx.objectStore(STORE_DONATIONS);
-        donations.forEach(item => writeStore.put(item));
-        await logActivity('INDEXEDDB_RESTORED', `Restored ${donations.length} items from LocalStorage backup into IndexedDB.`);
-      } else {
-        // Both are empty or insufficient: Seed with initial 20 Mock SDG 2 Data
-        donations = [...initialMockDonations];
-        const seedTx = db.transaction(STORE_DONATIONS, 'readwrite');
-        const seedStore = seedTx.objectStore(STORE_DONATIONS);
-        donations.forEach(item => seedStore.put(item));
-        writeLocalStorage(LS_KEY_DONATIONS, donations);
-        await logActivity('INITIAL_SEED', `Seeded database with ${donations.length} SDG 2 Share The Bite listings.`);
-      }
-    } else if (donations.length < 20) {
-      // Auto-upgrade: If browser has older dataset (e.g. earlier 6 items), upgrade with all 20 sample items
-      const existingIds = new Set(donations.map(d => d.id));
-      const missing = initialMockDonations.filter(m => !existingIds.has(m.id));
-      const upgradedList = (donations.length <= 6) ? [...initialMockDonations] : [...donations, ...missing];
-
-      const writeTx = db.transaction(STORE_DONATIONS, 'readwrite');
-      const writeStore = writeTx.objectStore(STORE_DONATIONS);
-      writeStore.clear();
-      upgradedList.forEach(item => writeStore.put(item));
-      writeLocalStorage(LS_KEY_DONATIONS, upgradedList);
-      donations = upgradedList;
-      await logActivity('DATABASE_UPGRADE', `Automatically upgraded storage to ${donations.length} comprehensive SDG-2 surplus food listings.`);
-    } else {
-      writeLocalStorage(LS_KEY_DONATIONS, donations);
+    if (!donations || donations.length === 0) {
+      donations = readLocalStorage(LS_KEY_DONATIONS, []);
     }
   } catch (err) {
-    console.warn('IndexedDB unavailable or blocked. Using LocalStorage primary mode:', err);
-    let lsBackup = readLocalStorage(LS_KEY_DONATIONS, null);
-    if (!lsBackup || lsBackup.length < 20) {
-      lsBackup = [...initialMockDonations];
-      writeLocalStorage(LS_KEY_DONATIONS, lsBackup);
-    }
-    donations = lsBackup;
+    donations = readLocalStorage(LS_KEY_DONATIONS, []);
   }
 
-  // Also initialize users and auth session
+  // 2. Connect to Firebase Cloud Firestore
+  try {
+    const firestoreRef = collection(db, 'donations');
+    const snapshot = await getDocs(firestoreRef);
+
+    if (snapshot.size > 0) {
+      // Cloud has existing listings: extract and sync down to local cache
+      const cloudDonations = [];
+      snapshot.forEach((docSnap) => {
+        cloudDonations.push(docSnap.data());
+      });
+
+      cloudDonations.sort((a, b) => (b.id || 0) - (a.id || 0));
+      donations = cloudDonations;
+
+      // Update local storage mirrors
+      writeLocalStorage(LS_KEY_DONATIONS, donations);
+      try {
+        const idb = await openDB();
+        const tx = idb.transaction(STORE_DONATIONS, 'readwrite');
+        const st = tx.objectStore(STORE_DONATIONS);
+        st.clear();
+        donations.forEach(item => st.put(item));
+      } catch (e) {}
+
+      await logActivity('FIRESTORE_SYNCED', `Synchronized ${donations.length} items from Firebase Cloud Firestore.`);
+    } else {
+      // Cloud Firestore is newly initialized: seed with all 20 SDG 2 sample products
+      const seedItems = [...initialMockDonations];
+      donations = seedItems;
+      writeLocalStorage(LS_KEY_DONATIONS, donations);
+
+      // Seed locally
+      try {
+        const idb = await openDB();
+        const tx = idb.transaction(STORE_DONATIONS, 'readwrite');
+        const st = tx.objectStore(STORE_DONATIONS);
+        st.clear();
+        donations.forEach(item => st.put(item));
+      } catch (e) {}
+
+      // Batch upload all 20 sample products to Firebase Cloud Firestore
+      try {
+        const batch = writeBatch(db);
+        seedItems.forEach((item) => {
+          const docRef = doc(db, 'donations', String(item.id));
+          batch.set(docRef, item);
+        });
+        await batch.commit();
+        await logActivity('FIRESTORE_SEEDED', `Seeded Firebase Cloud Firestore with all 20 SDG-2 sample products.`);
+      } catch (batchErr) {
+        console.warn('Firestore initial batch seed notice:', batchErr);
+      }
+    }
+  } catch (firestoreErr) {
+    console.warn('Firebase Firestore network or permission fallback to local storage:', firestoreErr);
+    if (!donations || donations.length < 20) {
+      donations = [...initialMockDonations];
+      writeLocalStorage(LS_KEY_DONATIONS, donations);
+    }
+  }
+
+  // 3. Setup real-time listener for ongoing updates from Cloud Firestore
+  setupFirestoreRealtimeListener();
+
+  // 4. Initialize users and auth session
   await initializeUsers();
 
   return donations;
 }
 
 // ----------------------------------------------------------------------------
-// CRUD Methods for Food Donations
+// CRUD Methods for Food Donations (Cloud Firestore + Local Mirror)
 // ----------------------------------------------------------------------------
 
 export async function getAllDonations() {
   try {
-    const db = await openDB();
+    const ls = readLocalStorage(LS_KEY_DONATIONS, null);
+    if (ls && Array.isArray(ls) && ls.length > 0) {
+      return ls;
+    }
+
+    const idb = await openDB();
     return new Promise((resolve) => {
-      const tx = db.transaction(STORE_DONATIONS, 'readonly');
+      const tx = idb.transaction(STORE_DONATIONS, 'readonly');
       const store = tx.objectStore(STORE_DONATIONS);
       const req = store.getAll();
       req.onsuccess = () => {
@@ -1196,21 +1351,21 @@ export async function getAllDonations() {
 
 export async function getDonationById(id) {
   const numId = Number(id);
+  const ls = readLocalStorage(LS_KEY_DONATIONS, []);
+  const found = ls.find(d => d.id === numId);
+  if (found) return found;
+
   try {
-    const db = await openDB();
+    const idb = await openDB();
     return new Promise((resolve) => {
-      const tx = db.transaction(STORE_DONATIONS, 'readonly');
+      const tx = idb.transaction(STORE_DONATIONS, 'readonly');
       const store = tx.objectStore(STORE_DONATIONS);
       const req = store.get(numId);
       req.onsuccess = () => resolve(req.result || null);
-      req.onerror = () => {
-        const ls = readLocalStorage(LS_KEY_DONATIONS, []);
-        resolve(ls.find(d => d.id === numId) || null);
-      };
+      req.onerror = () => resolve(null);
     });
   } catch (e) {
-    const ls = readLocalStorage(LS_KEY_DONATIONS, []);
-    return ls.find(d => d.id === numId) || null;
+    return null;
   }
 }
 
@@ -1239,18 +1394,26 @@ export async function addDonation(itemData) {
     createdAt: new Date().toISOString()
   };
 
-  // 1. Update LocalStorage
+  // 1. Update LocalStorage immediately
   const ls = readLocalStorage(LS_KEY_DONATIONS, []);
   const updated = [newItem, ...ls];
   writeLocalStorage(LS_KEY_DONATIONS, updated);
 
   // 2. Update IndexedDB
   try {
-    const db = await openDB();
-    const tx = db.transaction(STORE_DONATIONS, 'readwrite');
+    const idb = await openDB();
+    const tx = idb.transaction(STORE_DONATIONS, 'readwrite');
     tx.objectStore(STORE_DONATIONS).put(newItem);
   } catch (err) {
     console.warn('Error saving to IndexedDB:', err);
+  }
+
+  // 3. Sync to Firebase Cloud Firestore
+  try {
+    const docRef = doc(db, 'donations', String(newItem.id));
+    await setDoc(docRef, newItem);
+  } catch (cloudErr) {
+    console.warn('Firebase Cloud Firestore sync deferred:', cloudErr);
   }
 
   await logActivity(
@@ -1259,6 +1422,7 @@ export async function addDonation(itemData) {
     newItem.donor
   );
 
+  notifyDonationSubscribers(updated);
   return newItem;
 }
 
@@ -1277,8 +1441,8 @@ export async function updateDonation(id, updates) {
 
   // 2. Update IndexedDB
   try {
-    const db = await openDB();
-    const tx = db.transaction(STORE_DONATIONS, 'readwrite');
+    const idb = await openDB();
+    const tx = idb.transaction(STORE_DONATIONS, 'readwrite');
     const store = tx.objectStore(STORE_DONATIONS);
     const existing = await new Promise((resolve) => {
       const getReq = store.get(numId);
@@ -1294,40 +1458,51 @@ export async function updateDonation(id, updates) {
     console.warn('Error updating in IndexedDB:', err);
   }
 
+  // 3. Sync update to Firebase Cloud Firestore
+  try {
+    const docRef = doc(db, 'donations', String(numId));
+    await setDoc(docRef, updatedItem, { merge: true });
+  } catch (cloudErr) {
+    console.warn('Firebase Cloud Firestore update deferred:', cloudErr);
+  }
+
   await logActivity(
     'DONATION_UPDATED',
     `Updated donation #${numId} (${updatedItem?.item || 'Item'}).`,
     'System'
   );
 
+  notifyDonationSubscribers(ls);
   return updatedItem;
 }
 
 export async function deleteDonation(id) {
   const numId = Number(id);
-  let deletedItem = null;
 
-  // 1. Remove from LocalStorage
+  // 1. Update LocalStorage
   const ls = readLocalStorage(LS_KEY_DONATIONS, []);
-  deletedItem = ls.find(d => d.id === numId);
   const filtered = ls.filter(d => d.id !== numId);
   writeLocalStorage(LS_KEY_DONATIONS, filtered);
 
-  // 2. Remove from IndexedDB
+  // 2. Update IndexedDB
   try {
-    const db = await openDB();
-    const tx = db.transaction(STORE_DONATIONS, 'readwrite');
+    const idb = await openDB();
+    const tx = idb.transaction(STORE_DONATIONS, 'readwrite');
     tx.objectStore(STORE_DONATIONS).delete(numId);
   } catch (err) {
     console.warn('Error deleting from IndexedDB:', err);
   }
 
-  await logActivity(
-    'DONATION_DELETED',
-    `Deleted donation listing #${numId} (${deletedItem?.item || 'Item'}).`,
-    'Admin'
-  );
+  // 3. Delete from Firebase Cloud Firestore
+  try {
+    const docRef = doc(db, 'donations', String(numId));
+    await deleteDoc(docRef);
+  } catch (cloudErr) {
+    console.warn('Firebase Cloud Firestore delete deferred:', cloudErr);
+  }
 
+  await logActivity('DONATION_DELETED', `Deleted donation #${numId}.`, 'System Admin');
+  notifyDonationSubscribers(filtered);
   return true;
 }
 
@@ -1538,35 +1713,48 @@ export async function updateDonationStatus(id, newStatus, actor = 'System') {
 // ----------------------------------------------------------------------------
 
 export async function clearAllDonations() {
-  // Clear LocalStorage
+  // 1. Clear LocalStorage
   writeLocalStorage(LS_KEY_DONATIONS, []);
 
-  // Clear IndexedDB
+  // 2. Clear IndexedDB
   try {
-    const db = await openDB();
-    const tx = db.transaction(STORE_DONATIONS, 'readwrite');
+    const idb = await openDB();
+    const tx = idb.transaction(STORE_DONATIONS, 'readwrite');
     tx.objectStore(STORE_DONATIONS).clear();
   } catch (err) {
     console.warn('Error clearing IndexedDB:', err);
   }
 
+  // 3. Clear Firebase Cloud Firestore
+  try {
+    const snap = await getDocs(collection(db, 'donations'));
+    const batch = writeBatch(db);
+    snap.forEach((docSnap) => {
+      batch.delete(docSnap.ref);
+    });
+    await batch.commit();
+  } catch (cloudErr) {
+    console.warn('Firebase cloud clear deferred:', cloudErr);
+  }
+
   await logActivity(
     'ALL_DONATIONS_CLEARED',
-    'Cleared all food donation records from IndexedDB and LocalStorage.',
+    'Cleared all food donation records from Firebase Cloud Firestore, IndexedDB, and LocalStorage.',
     'System Admin'
   );
 
+  notifyDonationSubscribers([]);
   return [];
 }
 
 export async function resetToMockData() {
-  // Overwrite LocalStorage
+  // 1. Overwrite LocalStorage
   writeLocalStorage(LS_KEY_DONATIONS, initialMockDonations);
 
-  // Overwrite IndexedDB
+  // 2. Overwrite IndexedDB
   try {
-    const db = await openDB();
-    const tx = db.transaction(STORE_DONATIONS, 'readwrite');
+    const idb = await openDB();
+    const tx = idb.transaction(STORE_DONATIONS, 'readwrite');
     const store = tx.objectStore(STORE_DONATIONS);
     store.clear();
     initialMockDonations.forEach(item => store.put(item));
@@ -1574,12 +1762,25 @@ export async function resetToMockData() {
     console.warn('Error resetting IndexedDB to mock data:', err);
   }
 
+  // 3. Sync all 20 sample products to Firebase Cloud Firestore
+  try {
+    const batch = writeBatch(db);
+    initialMockDonations.forEach((item) => {
+      const docRef = doc(db, 'donations', String(item.id));
+      batch.set(docRef, item);
+    });
+    await batch.commit();
+  } catch (cloudErr) {
+    console.warn('Firebase batch reset deferred:', cloudErr);
+  }
+
   await logActivity(
     'DATABASE_RESET',
-    `Reset database with ${initialMockDonations.length} default SDG-2 demo records in IndexedDB & LocalStorage.`,
+    `Reset database with all ${initialMockDonations.length} default SDG-2 demo records in Firebase Cloud Firestore, IndexedDB & LocalStorage.`,
     'System Admin'
   );
 
+  notifyDonationSubscribers([...initialMockDonations]);
   return [...initialMockDonations];
 }
 
@@ -1690,8 +1891,17 @@ export async function getStorageDiagnostics() {
   const rawUsers = JSON.stringify(users);
   const bytesEstimate = (rawDonations.length + rawLogs.length + rawUsers.length) * 2;
 
+  let firebaseOnline = false;
+  try {
+    firebaseOnline = !!db && !!auth;
+  } catch (e) {}
+
   return {
-    engine: isIndexedDBSupported() ? 'IndexedDB (Primary) + LocalStorage (Mirror)' : 'LocalStorage Mode (Fallback)',
+    engine: 'Triple-Engine: Firebase Cloud Firestore + IndexedDB + LocalStorage',
+    firebaseProject: 'e-connect-sgs',
+    firebaseConnected: firebaseOnline,
+    firebaseAuthUser: auth.currentUser ? auth.currentUser.email : (activeSession?.user?.email || 'None'),
+    storageBucket: 'e-connect-sgs.firebasestorage.app',
     indexedDBAvailable: isIndexedDBSupported(),
     localStorageAvailable: typeof window !== 'undefined' && 'localStorage' in window,
     databaseName: DB_NAME,

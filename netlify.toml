@@ -2,10 +2,6 @@
   command = "npm run build"
   publish = "dist"
 
-[build.environment]
-  NODE_VERSION = "20"
-
-# Single Page Application SPA Redirect: all URLs route to index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
